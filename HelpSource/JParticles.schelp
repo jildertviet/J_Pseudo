@@ -1,0 +1,44 @@
+TITLE:: JParticles
+summary:: (put short description here)
+categories:: Undocumented classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+
+INSTANCEMETHODS::
+
+METHOD:: createUnique
+(describe method here)
+
+ARGUMENT:: a
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+~ps = JParticles.new("nonCamFront");
+~ps.setNumParticles(1000000);
+~ps.setSize([2560, 800]);
+~ps.setColor([255, 255, 255, 30]);
+~ps.create();
+
+~vf = JVecField.new("nonCamFront");
+~vf.create();
+~vf.setSpeed(0.01);
+~vf.setDensity([128, 80]);
+~vf.setSize([2560, 800]);
+~vf.setDrawMode("hide");
+~vf.setColor([0, 0, 0, 255]);
+~vf.setSourceMode("perlin");
+~vf.setComplexity(50);
+
+~ps.linkVecField(~vf);
+::

@@ -1,0 +1,37 @@
+TITLE:: JPhysarum
+summary:: (put short description here)
+categories:: Undocumented classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+
+INSTANCEMETHODS::
+
+METHOD:: test
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: createUnique
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: test2
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+	j[i] = JPhysarum.new("nonCamFront");
+	j[i].setSize([1024, 1024], false);
+	j[i].create();
+::

@@ -1,0 +1,27 @@
+TITLE:: JImage
+summary:: Represent an image
+categories:: Undocumented classes
+related:: JVisuals
+
+DESCRIPTION::
+Represent an image
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+METHOD:: setPath
+The URL of the iamge to load, call this before create();
+
+ARGUMENT:: p
+The path as a string
+
+returns:: nothing
+
+EXAMPLES::
+
+code::
+var img = JImage.new();
+img.setPath("somePath.png");
+img.create();
+::

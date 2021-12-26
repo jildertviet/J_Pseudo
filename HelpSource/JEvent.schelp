@@ -1,0 +1,275 @@
+TITLE:: JEvent
+summary:: Base class of Events for Visualizer (openFrameworks).
+categories:: Undocumented classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+Source files are located in ~/Library/Application\ Support/SuperCollider/Extensions/J
+
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: l
+The layer on which te event will be rendered.
+This can be a string, like: "nonCamFront", "nonCamBack" or "negative"
+This can be an integer (2="nonCamFront")
+This can be JEvent.defaultLayer or JEvent.nonCamLayer;
+
+ARGUMENT:: visualizerID
+ID for which visualizer to use. Default is 0. Visualizer objects are stored and referenced via ~v, a List.
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: create
+Sends the init arguments with a /make command to OF.
+
+returns:: (describe returnvalue here)
+
+METHOD:: init
+Called in .new()
+
+ARGUMENT:: l
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setMove
+(describe method here)
+
+ARGUMENT:: m
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setSpeed
+(describe method here)
+
+ARGUMENT:: sp
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: sendMakeCmd
+(describe method here)
+
+ARGUMENT:: type
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setVal
+(describe method here)
+
+ARGUMENT:: name
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: addEnv
+(describe method here)
+
+ARGUMENT:: name
+(describe argument here)
+
+ARGUMENT:: times
+(describe argument here)
+
+ARGUMENT:: values
+(describe argument here)
+
+ARGUMENT:: kill
+(describe argument here)
+
+ARGUMENT:: bSave
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: loc
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: defaultLayer
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setAlpha
+(describe method here)
+
+ARGUMENT:: a
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: layer
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setColor
+(describe method here)
+
+ARGUMENT:: c
+(describe argument here)
+
+ARGUMENT:: colorIndex
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: color
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: addLoc
+(describe method here)
+
+ARGUMENT:: l
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: nonCamLayer
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setDirection
+(describe method here)
+
+ARGUMENT:: d
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setCustomArg
+(describe method here)
+
+ARGUMENT:: index
+(describe argument here)
+
+ARGUMENT:: value
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: bMove
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: direction
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: id
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: killAll
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: speed
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: killEnv
+(describe method here)
+
+ARGUMENT:: release
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: createUnique
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: mode
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: createArgs
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: rotation
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: uniqueInit
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setRotation
+(describe method here)
+
+ARGUMENT:: rot
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setMode
+(describe method here)
+
+ARGUMENT:: m
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setSize
+(describe method here)
+
+ARGUMENT:: si
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: doFunc
+(describe method here)
+
+ARGUMENT:: functionId
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setLoc
+(describe method here)
+
+ARGUMENT:: l
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: size
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+(some example code)
+::

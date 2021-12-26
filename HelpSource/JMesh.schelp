@@ -1,0 +1,54 @@
+TITLE:: JMesh
+summary:: Test
+categories:: Undocumented classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+Uses ofVboMesh
+
+
+CLASSMETHODS::
+
+
+INSTANCEMETHODS::
+
+METHOD:: save
+Save the mesh for one frame (ment for export to Blender)
+
+returns:: (describe returnvalue here)
+
+METHOD:: numAngles
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: createUnique
+(describe method here)
+
+ARGUMENT:: a
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: doSave
+Set export-flag to true
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: makeHollowRect
+		|dimensions=#[100, 100, 100], size=20|
+returns:: (describe returnvalue here)
+
+EXAMPLES::
+
+code::
+(
+m = JMesh.new();
+m.create();
+m.setSize([100, 100, 100]);
+m.setLoc([200, 200, 0]);
+m.setColor([255, 255, 255, 255]);
+m.killEnv(1000);
+)
+::

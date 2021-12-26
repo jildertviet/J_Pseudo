@@ -1,0 +1,46 @@
+TITLE:: JRectangle
+summary:: (put short description here)
+categories:: Undocumented classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+
+INSTANCEMETHODS::
+
+METHOD:: createUnique
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+(
+j = JRectangle.new();
+j.create();
+
+j.setLoc([100, 100]);
+j.setSize([100, 100]);
+j.setColor([255, 255, 255, 255]);
+)
+
+// Move
+
+{
+	inf.do{
+		|i|
+		h = 400 * 1.0.rand;
+		w = 400 * 1.0.rand;
+		j.setSize([w,h]);
+		j.setLoc([w*0.5*(-1), h*0.5*(-1)]);
+		(0.05!3 ++ 0.1).wrapAt(i).wait;
+	}
+}.fork;
+
+::

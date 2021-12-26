@@ -1,0 +1,67 @@
+TITLE:: JVecField
+summary:: (put short description here)
+categories:: Undocumented classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+(put long description here)
+
+
+CLASSMETHODS::
+
+
+INSTANCEMETHODS::
+
+METHOD:: complexity
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setComplexity
+(describe method here)
+
+ARGUMENT:: c
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: density
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setLineLength
+(describe method here)
+
+ARGUMENT:: l
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: lineLength
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setDensity
+(describe method here)
+
+ARGUMENT:: d
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: createUnique
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+~vf = JVecField.new("nonCamBack");
+// ~vf = JVecField.new();
+~vf.create();
+~vf.setSpeed(0.01);
+::
