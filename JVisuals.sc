@@ -173,15 +173,20 @@ JVisuals : JMIDI{
 	}
 	startSequenceAPC {
 		var offset = 0.21; // For MIDI-controller lag
+		"startSequenceAPC".postln;
 		TempoClock.default.schedAbs(
-	TempoClock.default.beats.ceil,
+			TempoClock.default.beats.ceil,
 			{ |beat|
 				var apcNoteIndex = (((beat % 4)*2)+1) % 8;
 				var prevNote = (apcNoteIndex - 1) % 8;
 				// beat.postln;
-		{(offset * TempoClock.default.beatDur).wait;~mOut.noteOn(16, 56 + apcNoteIndex, 5);
-			~mOut.noteOn(16, 56 + prevNote, 0);}.fork;
-		0.5});
+				{
+					(offset * TempoClock.default.beatDur).wait;
+					~mOut.noteOn(16, 56 + apcNoteIndex, 5);
+					~mOut.noteOn(16, 56 + prevNote, 0);
+				}.fork;
+			0.5 // Time to wait?
+		});
 	}
 	startClickTrack {
 		TempoClock.default.schedAbs(TempoClock.default.beats.ceil, {|beat|(beat%8); {EnvGen.kr(Env.perc(0.01, 0.01), doneAction: 2); HPF.ar(WhiteNoise.ar([0.6,0.3].wrapAt(beat)!2), ([10000]++((5000!3))).wrapAt(beat * 2))}.play; 0.5});

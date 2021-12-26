@@ -1,5 +1,5 @@
 TIYCS{
-	var <> scenes, <>img, <>size, frameDur;
+	var <> scenes, <>img, <>size, <>frameDur, <>frameRate;
 	var <>routines;
 	*new{
 		^super.new.init();
@@ -23,6 +23,7 @@ TIYCS{
 	setFramerate {
 		|rate|
 		frameDur = (1/rate);
+		frameRate = rate;
 	}
 	init{
 		size = [1280, 800];
@@ -32,15 +33,22 @@ TIYCS{
 		routines = List.new();
 		scenes.add(
 			["Intro", {
+				var originalLoc = [0,0];
 				img = JImage.new();
 				img.setPath("joniskLayer.png");
 				img.create();
 				img.setSize(this.size);
-				routines.add(this.makeRoutine({|i|
-					// pow(sin(ofGetFrameNum()/50.), 2.) * 30 * welcomIntensity // Height
+				img.setLoc(originalLoc);
+				routines.add(this.makeRoutine({
+					|i|
 					var zoom = (sin(i/50) * (0.1 * 1) + 1);
+					var height = pow(sin(i/50), 2) * 30 * i.linexp(0, (frameRate * 10), 1, 2);
 					img.setZoom(zoom);
+					img.setLoc(originalLoc + [0, height]);
 				}));
+				/*
+				To do: make content for 3 screens
+				*/
 			}],
 			["Instructions"],
 			["CaptainPicto"],

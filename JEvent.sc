@@ -95,15 +95,12 @@ JEvent {
 	setVal {
 		|name, value|
 		var msg = List.newUsing(["/setVal", id, name]);
-		if(value.isArray, {
-			// Send as bundle
-			value.do{
-				|v|
-				msg.add(v);
-			};
+		if(value.isArray  && (value.isString == false), {
+			msg = msg ++ value;
 			this.sendMsg(msg.asArray);
 		}, {
 			msg.add(value);
+			// msg.postln;
 			this.sendMsg(msg.asArray);
 		});
 	}
@@ -177,9 +174,9 @@ JEvent {
 		this.setVal("speed", speed);
 	}
 	setZoom {
-		|zoom_|
-		zoom = zoom_;
-		this.setVal("zoom", zoom_);
+		|zoomArg|
+		zoom = zoomArg;
+		this.setVal("zoom", zoom);
 	}
 	addEnv {
 		|name = "brightness", times = #[500, 500, 500], values = #[0, 255, 255, 0], kill = false, bSave = false|

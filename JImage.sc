@@ -8,6 +8,15 @@ JImage : JEvent{
 	}
 	setPath {
 		|p|
-		this.path = p;
+		path = p;
+	}
+	load{
+		FileDialog({ |paths|
+			path = paths[0].asString;
+			path.postln;
+			this.setVal("path", path.asString);
+		}, {
+			postln("Dialog was cancelled. Try again.");
+	});
 	}
 }

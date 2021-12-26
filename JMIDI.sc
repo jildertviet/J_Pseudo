@@ -90,7 +90,7 @@ JMIDI {
 		MIDIFunc.noteOff({~v[0].bShiftPressed = false}, 98);
 		MIDIFunc.noteOn({|val, note| ~v[0].loadPreset(4-(note-85)); },(85..89));
 		MIDIFunc.noteOn({TempoClock.default.clear;  ~v[0].startSequenceAPC;}, 82); // Clear scheduled tasks "Clip stop"
-		~mOut.noteOn(16, 82, 1);
+		// ~mOut.noteOn(16, 82, 1); // Start the APC seq ...
 
 		this.loadPreset(0);
 		~cc.free;
