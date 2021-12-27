@@ -4,7 +4,7 @@ JVisuals : JMIDI{
 	var brightness, <alpha=0, <>maskBrightness=0;
 	var bgColor = #[0,0,0];
 	var <>bShiftPressed = false;
-	var <defaultPort = 6061;
+	classvar <>defaultPort = 6061;
 	var <>netAddr;
 	var <size = #[1280, 800];
 	var <w = 1280;
