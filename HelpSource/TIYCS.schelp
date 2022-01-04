@@ -1,0 +1,89 @@
+TITLE:: TIYCS
+summary:: This Is Your Captain Speaking (Visuals)
+categories:: Undocumented classes
+
+DESCRIPTION::
+This class servers functionality for controlling the visuals of TIYCS.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+INSTANCEMETHODS::
+
+METHOD:: eventById
+Execute an event on the visuals-server, see the source code for the corresponding IDs.
+Used for: bingo->removeBall() and starting a video for example.
+
+ARGUMENT:: id
+
+ARGUMENT:: value
+
+ARGUMENT:: screen
+
+METHOD:: clearRoutines
+Undo's routines that are generated with makeRoutine() (and that are added to the routines List)
+
+METHOD:: cc
+Set this function to define CC behaviour
+
+METHOD:: setScene
+
+ARGUMENT:: id
+ARGUMENT:: screen
+METHOD:: gui
+Call the GUI
+
+METHOD:: scenes
+List that contains the init functions and names of the scenes
+
+METHOD:: frameRate
+A number, 30 or 60. Don't set this, use setFramerate()
+
+METHOD:: noteOff
+
+METHOD:: noteOn
+
+METHOD:: setFramerate
+Sets frameRate and frameDur
+
+METHOD:: makeRoutine
+Loops a function, on the set framerate
+
+ARGUMENT:: num
+A number or inf
+
+ARGUMENT:: func
+{"Test".postln}
+
+returns:: A Function
+
+METHOD:: screens
+A List of NetAddr
+
+METHOD:: bingo
+Which numbers to draw
+
+METHOD:: counter
+GUI element
+
+METHOD:: setBus
+Set a bus on the visuals-server
+
+ARGUMENT:: id
+ARGUMENT:: value
+ARGUMENT:: screen
+
+METHOD:: img
+Not used
+
+EXAMPLES::
+
+code::
+TIYCS.new.gui
+::

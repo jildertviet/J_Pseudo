@@ -19,8 +19,13 @@ TIYCS{
 		size = [1280, 800];
 		this.setFramerate(30);
 		this.initBingo();
+		noteOn = List.new();
+		noteOff = List.new();
+		cc = List.new();
 		scenes = List.new();
 		routines = List.new();
+		this.initDefaultMidi();
+
 		scenes = scenes ++ [
 			["Intro", {
 				var numFrames = (frameRate * 30); // 30 sec
@@ -77,7 +82,7 @@ TIYCS{
 			}],
 			["ReturnToShip", {
 				this.setScene(10);
-				this.counter.value_(0); // Define a MIDI function
+				this.counter.value_(0).action_({|e| this.setBus(0, e.value)}); // Define a MIDI function
 				this.noteOn = {
 					|note, vel|
 					this.setBus(0, note); // Increase the seq
@@ -118,9 +123,28 @@ TIYCS{
 					[Button().string_("Reset").action_({this.initBingo(); this.eventById(3)})],
 				);
 			}],
-			["Code"],
-			["Autopilot"],
-			["None"],
+			["Code", {
+				this.setScene(14, -1);
+				this.setBus(0,0);
+				this.counter.value_(0).action_({|e|this.setBus(0, e.value)}).focus();
+			}],
+			["Autopilot", {
+				var numFrames = 10 * frameRate;
+				{
+					var routine;
+					10.wait;
+					routine = this.makeRoutine(numFrames, {|i|
+					this.setBus(1, linlin(i, 0, numFrames, 0, 101)); // %
+				}); // Roll
+				routines.add(routine);
+				}.fork;
+				this.setScene(15, -1);
+				this.setBus(1,0); // Percentage
+				this.setBus(0,0); // Hover
+			}],
+			["None", {
+				this.setScene(16);
+			}],
 		];
 	}
 	makeRoutine{
@@ -198,5 +222,33 @@ TIYCS{
 			e.string_(scenes[i][0]);
 			e.action_({this.clearRoutines; scenes[i][1].value()});
 		}
+	}
+	clearMidiFunc{
+		|num|
+		[noteOn, noteOff].do{
+			|list| // noteOn and noteOff
+			var indexToRemove = -1;
+			list.do{
+				|e, i|
+				if(e.msgNum == num, {
+					indexToRemove = i;
+				});
+			};
+			if(indexToRemove >= 0, {
+				list.removeAt(indexToRemove);
+			});
+		}
+	}
+	initDefaultMidi{
+		var noteOnFunc, noteOffFunc;
+		this.clearMidiFunc(36);
+		noteOnFunc = MIDIFunc.noteOn({
+			this.setBus(2, 1); // Red brightness 100
+		}, 36);
+		noteOffFunc = MIDIFunc.noteOff({
+			this.setBus(2, 0); // Red brightness 0
+		}, 36);
+		this.noteOn.add(noteOnFunc);
+		this.noteOff.add(noteOffFunc);
 	}
 }
