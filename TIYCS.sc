@@ -12,7 +12,7 @@ TIYCS{
 	init{
 		screens = [
 			NetAddr("127.0.0.2", 5000),
-			NetAddr("127.0.0.1", 5000),
+			NetAddr("192.168.178.204", 5000),
 			NetAddr("127.0.0.3", 5000),
 		];
 
@@ -250,5 +250,7 @@ TIYCS{
 		}, 36);
 		this.noteOn.add(noteOnFunc);
 		this.noteOff.add(noteOffFunc);
+
+		// Notes for scenes @ re-entrance
 	}
 }

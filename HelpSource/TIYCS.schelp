@@ -1,6 +1,6 @@
 TITLE:: TIYCS
 summary:: This Is Your Captain Speaking (Visuals)
-categories:: Undocumented classes
+categories:: TIYCS
 
 DESCRIPTION::
 This class servers functionality for controlling the visuals of TIYCS.
@@ -28,6 +28,11 @@ ARGUMENT:: screen
 
 METHOD:: clearRoutines
 Undo's routines that are generated with makeRoutine() (and that are added to the routines List)
+code::
+t = TIYCS.new();
+t.routines.add(t.makeRoutine(inf, {"x".postln}));
+t.clearRoutines(); // Stops
+::
 
 METHOD:: cc
 Set this function to define CC behaviour
