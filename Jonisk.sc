@@ -9,7 +9,7 @@ Jonisk{
 	var <>whiteValue=0;
 	var <> serial = nil;
 	var end = #[101,110,100];
-	var id = nil;
+	var <>id = nil;
 	var <>bus;
 	*new{
 		|index, serial|
