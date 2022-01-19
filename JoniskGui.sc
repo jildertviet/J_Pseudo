@@ -18,13 +18,14 @@
 		};
 		colorSliders = Array.fill(4, {
 			|i|
-			var slider = EZSlider.new(window, label:"RGBW".at(i), controlSpec: ControlSpec(0, 255, 'lin')).value_(0).action_({
+			var slider = EZSlider.new(window, label:"RGBW".at(i), controlSpec: ControlSpec(0, 255, 'lin')).value_(color.toJV[i]).action_({
 				|e|
-				var newColor = color.toJV;
-				newColor[i] = e.value;
-				color = Color.new255(newColor[0], newColor[1], newColor[2], newColor[3]);
-				// color.postln;
-				this.setColor(color.toJV);
+				var newColor = [color.red, color.green, color.blue, color.alpha];
+				newColor[i] = e.value / 255;
+				color = Color(newColor[0], newColor[1], newColor[2], newColor[3]);
+				color.postln;
+				this.setColor(color.toJV ++ (color.alpha * 255));
+				[color.red, color.green, color.blue, color.alpha].postln;
 				synth.set(\rgbw, color.asArray);
 			});
 			slider.setColors(numNormalColor: Color.white);
@@ -37,15 +38,17 @@
 			});
 			slider.setColors(numNormalColor: Color.white);
 		});
-		EZSlider.new(window, label:"Brightness", controlSpec: ControlSpec(0, 1, 'lin', 0.01), labelWidth: 80).value_(1).action_({
+		EZSlider.new(window, label:"Brightness", controlSpec: ControlSpec(0, 1, 'lin', 0.01), labelWidth: 80).value_(brightness).action_({
 			|e|
+			brightness = e.value;
 			synth.set(\b, e.value);
 		}).setColors(numNormalColor: Color.white);
 		window.view.decorator.left = 25;
 		window.view.decorator.top = window.view.decorator.top + 25;
-		TextView.new(window, Rect(0,0, window.bounds.width - 70, 28)).string_(address.asString).editable_(false).hasVerticalScroller_(false);
+		TextView.new(window, Rect(0,0, window.bounds.width - 70, 28)).string_(addrToPrint.asString).editable_(false).hasVerticalScroller_(false);
 		window.view.decorator.left = 25;
 		window.view.decorator.top = window.view.decorator.top + 30;
 		Stethoscope.new(Server.default, bus.numChannels, bus.index, rate: 'control', view: window.view);
+		^window;
 	}
 }

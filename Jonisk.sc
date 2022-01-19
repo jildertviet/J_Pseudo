@@ -5,12 +5,15 @@ Jonisk{
 	*/
 	var <>synth;
 	var <>address = #[0xFF,0xFF,0xFF,0xFF,0xFF,0xFF];
+	var <>	addrToPrint = "0xFF";
 	var <>color;
 	var <>whiteValue=0;
 	var <> serial = nil;
 	var end = #[101,110,100];
 	var <>id = nil;
 	var <>bus;
+	var <> batteryPct = 100;
+	var <> brightness = 1;
 	*new{
 		|index, serial|
 		Jonisk.loadSynthDef();
@@ -40,6 +43,7 @@ Jonisk{
 	send{
 		|msg|
 		if(serial != nil, {
+			msg.postln;
 			serial.putAll(msg);
 		});
 	}
@@ -52,6 +56,7 @@ Jonisk{
 	setColor {
 		|c = #[255, 0, 0 ,0]|
 		var msg;
+		color = Color.fromArray(c.at([0,1,2]) / 255).alpha_(c[3] / 255);
 		msg = address ++ [0x05] ++ c ++ end;
 		this.send(msg);
 	}
