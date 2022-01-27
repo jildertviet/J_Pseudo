@@ -10,6 +10,7 @@ JoniskMain{
 	var <>msgBuffer = #[0,0,0];
 	var <> message = "";
 	var <>bWriteMsg = false;
+	var liveButton;
 	*new{
 		^super.new.init();
 	}
@@ -137,11 +138,14 @@ JoniskMain{
 						frameDur.wait;
 					}
 				}.fork;
+				^true;
 			}, {
 				"Serial port not open".error;
+				^false;
 			});
 		}, {
 			"No serial port initiated".error;
+			^false;
 		});
 	}
 	stop{
@@ -149,18 +153,29 @@ JoniskMain{
 	}
 	gui{
 		var w = Window("TIYCS - Jonisk control").front;
-		w.view.palette_(QPalette.dark);
-		w.layout = VLayout(
-			HLayout([Button().states_([["LIVE", Color.white, Color.new255(49,222,75)], ["STOP", Color.white, Color.new255(255,65,54)]]).action_({
+		liveButton = Button().string_("Idle").action_({
+			|e|
+			"X".postln;
+			e.states_([["GO LIVE", Color.white, Color.new255(49,222,75)], ["STOP", Color.white, Color.new255(255,65,54)]]).action_({
 				|e|
 				if(e.value == 1, {
 					"Start live mode".postln;
-					this.start();
+					if(this.start() == true, {
+
+					}, {
+						e.value_(0);
+					});
 				}, {
 					"Stop live mode".postln;
 					this.stop();
 				})
-			}), stretch: 1], w.view.bounds.width * 0.8),
+		});
+			e.valueAction_(1);
+		});
+
+		w.view.palette_(QPalette.dark);
+		w.layout = VLayout(
+			HLayout([liveButton, stretch: 1], w.view.bounds.width * 0.8),
 			*(jonisks.collect({|e| HLayout(
 				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), stretch: 1],
 				[StaticText.new().string_(e.address.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), stretch: 6],
