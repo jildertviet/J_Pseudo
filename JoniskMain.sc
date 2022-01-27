@@ -6,7 +6,7 @@ JoniskMain{
 	var <> serialPorts;
 	var <> baud = 230400;
 	var <> updateRoutine;
-	var <> frameDur = 1;
+	var <> frameDur = 0.04;
 	var <>msgBuffer = #[0,0,0];
 	var <> message = "";
 	var <>bWriteMsg = false;
@@ -200,7 +200,7 @@ JoniskMain{
 
 		window.view.palette_(QPalette.dark);
 		window.layout = VLayout(
-			HLayout([liveButton], [NumberBox().value_(frameDur).action_({|e| frameDur = e.value}).stringColor_(Color.white)], window.view.bounds.width * 0.5),
+			HLayout([liveButton], [NumberBox().value_(frameDur).action_({|e| frameDur = e.value}).normalColor_(Color.white)], window.view.bounds.width * 0.5),
 			*(jonisks.collect({|e| HLayout(
 				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), stretch: 1],
 				[StaticText.new().string_(e.address.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), stretch: 6],

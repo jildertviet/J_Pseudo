@@ -69,8 +69,8 @@ TIYCS{
 				window.view.palette_(QPalette.dark);
 				window.layout = HLayout(
 					[Button().string_("One").action_({this.setScene(6, -1); this.eventById(1, 0)})],
-					[Button().string_("Two").action_({this.setScene(7, -1); this.eventById(1, 1)})],
-					[Button().string_("Three").action_({this.setScene(8, -1); this.eventById(1, 2)})],
+					[Button().string_("Two").action_({this.setScene(6, -1); this.eventById(1, 1)})],
+					[Button().string_("Three").action_({this.setScene(6, -1); this.eventById(1, 2)})],
 					[Button().string_("Stop").action_({this.setScene(16, -1); this.eventById(1, -1)})],
 				);
 			}
