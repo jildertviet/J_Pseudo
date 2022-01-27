@@ -11,6 +11,7 @@ JoniskMain{
 	var <> message = "";
 	var <>bWriteMsg = false;
 	var liveButton;
+	var <> window;
 	*new{
 		^super.new.init();
 	}
@@ -64,9 +65,9 @@ JoniskMain{
 	}
 	checkForMsgStart{
 		|byte|
-		if(byte == 'g', {
-			if(msgBuffer[1] == 's', {
-				if(msgBuffer[0] == 'm', {
+		if(byte == 'g'.ascii[0], {
+			if(msgBuffer[1] == 's'.ascii[0], {
+				if(msgBuffer[0] == 'm'.ascii[0], {
 					bWriteMsg = true;
 				});
 			});
@@ -74,9 +75,9 @@ JoniskMain{
 	}
 	checkForMsgEnd{
 		|byte|
-		if(byte == 'd', {
-			if(msgBuffer[1] == 'n', {
-				if(msgBuffer[0] == 'e', {
+		if(byte == 'd'.ascii[0], {
+			if(msgBuffer[1] == 'n'.ascii[0], {
+				if(msgBuffer[0] == 'e'.ascii[0], {
 					bWriteMsg = false;
 					this.parseMsg();
 				});
@@ -86,7 +87,25 @@ JoniskMain{
 	parseMsg{
 		var msg = message;
 		msg = msg.replace("en", ""); // Remove last
-		("MSG: " ++ msg).postln;
+		("\nMSG: " ++ msg).postln;
+		if(msg.find("a") == 0, { // Battery update
+			var addr = (0!6);
+			var batteryVoltage;
+			msg = msg.replace("a", "");
+			for(0, 5, {|e, i| addr[i] = msg.split($:)[i].asInteger});
+			addr = addr + [0, 0, 0, 0, 0, 1];
+			addr.postln;
+			batteryVoltage = msg.split($:).last.asInteger;
+			batteryVoltage = batteryVoltage / 2.pow(12); // 0V is 0, 16.8V is 4096. Value is now a percentage / 100.
+			batteryVoltage = batteryVoltage - (2/3); // 0.66 is shut-down voltage
+			batteryVoltage = (batteryVoltage * 300).asInteger; // 1/3 is scaled back to 100%
+			batteryVoltage.postln;
+			jonisks.do{|e| if(e.address == addr, {e.batteryPct = batteryVoltage})};
+			{
+				window.close;
+				this.gui();
+			}.defer;
+		});
 	}
 	initSerial {
 		|serialID=0|
@@ -100,11 +119,12 @@ JoniskMain{
 						byte = serial.next;
 						while({byte != nil}, {
 							this.storeByte(byte);
-							this.checkForMsgStart(byte);
 							this.checkForMsgEnd(byte);
+							// msgBuffer.postln;
 							if(bWriteMsg == true, {
-								message = message + byte.asAscii;
+								message = message ++ byte.asAscii;
 							});
+							this.checkForMsgStart(byte);
 							if(byte < 127, {
 								if(byte == 10, {
 									"".postln;
@@ -125,7 +145,10 @@ JoniskMain{
 	update{
 		jonisks[0].bus.getn(jonisks.size * 4, {
 			|v|
-			v.postln;
+			var end = [101,110,100];
+			var msg = (0xFF!6) ++ [0x05] ++ ((v*255).asInteger) ++ end;
+			msg.postln;
+			serial.putAll(msg);
 		});
 	}
 	start{
@@ -138,6 +161,7 @@ JoniskMain{
 						frameDur.wait;
 					}
 				}.fork;
+				jonisks.do{|e| e.bLive = true};
 				^true;
 			}, {
 				"Serial port not open".error;
@@ -149,10 +173,11 @@ JoniskMain{
 		});
 	}
 	stop{
+		jonisks.do{|e| e.bLive = false};
 		updateRoutine.stop;
 	}
 	gui{
-		var w = Window("TIYCS - Jonisk control").front;
+		window = Window("TIYCS - Jonisk control").front;
 		liveButton = Button().string_("Idle").action_({
 			|e|
 			"X".postln;
@@ -173,16 +198,16 @@ JoniskMain{
 			e.valueAction_(1);
 		});
 
-		w.view.palette_(QPalette.dark);
-		w.layout = VLayout(
-			HLayout([liveButton, stretch: 1], w.view.bounds.width * 0.8),
+		window.view.palette_(QPalette.dark);
+		window.layout = VLayout(
+			HLayout([liveButton], [NumberBox().value_(frameDur).action_({|e| frameDur = e.value}).stringColor_(Color.white)], window.view.bounds.width * 0.5),
 			*(jonisks.collect({|e| HLayout(
 				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), stretch: 1],
 				[StaticText.new().string_(e.address.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), stretch: 6],
 				[StaticText.new().string_(e.batteryPct.asString ++ "%").background_(Color.black.alpha_(0.1)).align_(\center), stretch: 1],
 				[Button.new().states_([
 					["GUI", Color.white, Color.black.alpha_(0.1)],
-				]).action_({var guiWindow = e.gui; var bounds = guiWindow.bounds; guiWindow.bounds_(bounds + Rect(w.bounds.width, 0, 0, 0))}), stretch: 1]
+				]).action_({var guiWindow = e.gui; var bounds = guiWindow.bounds; guiWindow.bounds_(bounds + Rect(window.bounds.width, 0, 0, 0))}), stretch: 1]
 			)}));
 		)
 	}

@@ -14,6 +14,7 @@ Jonisk{
 	var <>bus;
 	var <> batteryPct = 100;
 	var <> brightness = 1;
+	var <> bLive = false;
 	*new{
 		|index, serial|
 		Jonisk.loadSynthDef();
@@ -58,7 +59,9 @@ Jonisk{
 		var msg;
 		color = Color.fromArray(c.at([0,1,2]) / 255).alpha_(c[3] / 255);
 		msg = address ++ [0x05] ++ c ++ end;
-		this.send(msg);
+		if(bLive == false, {
+			this.send(msg);
+		});
 	}
 	off {
 		this.setColor(0!4);
