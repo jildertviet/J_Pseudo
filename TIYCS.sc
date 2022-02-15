@@ -61,6 +61,10 @@ TIYCS{
 				this.setScene(4, -1);
 				this.setBus(0, 2); // Height
 				this.setBus(1, 1); // TravelSpeed
+
+				this.setBus(3, 0);
+				this.setBus(4, 0);
+				this.setBus(5, 0);
 			}],
 			["Route"],
 			["Commercials", {

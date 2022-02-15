@@ -106,6 +106,7 @@ JoniskMain{
 				this.gui();
 			}.defer;
 		});
+		message = "";
 	}
 	initSerial {
 		|serialID=0|
@@ -200,7 +201,13 @@ JoniskMain{
 
 		window.view.palette_(QPalette.dark);
 		window.layout = VLayout(
-			HLayout([liveButton], [NumberBox().value_(frameDur).action_({|e| frameDur = e.value}).normalColor_(Color.white)], window.view.bounds.width * 0.5),
+			HLayout(
+				[liveButton],
+				[NumberBox().value_(frameDur).action_({|e| frameDur = e.value}).normalColor_(Color.white)],
+				Button().string_("Global").action_({this.openGlobalGui}),
+				Button().string_("Config").action_({this.configLights}),
+/*				window.view.bounds.width * 0.25,*/
+			),
 			*(jonisks.collect({|e| HLayout(
 				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), stretch: 1],
 				[StaticText.new().string_(e.address.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), stretch: 6],
@@ -210,6 +217,38 @@ JoniskMain{
 				]).action_({var guiWindow = e.gui; var bounds = guiWindow.bounds; guiWindow.bounds_(bounds + Rect(window.bounds.width, 0, 0, 0))}), stretch: 1]
 			)}));
 		)
+	}
+	configLights{
+		{
+			jonisks.do{
+				|jonisk, i|
+				var addr = jonisk.address;
+				var id = i;
+				var end = [101,110,100];
+				serial.putAll(addr ++ [0x03, id] ++ end);
+				0.1.wait;
+			};
+			"Config lights done".postln;
+		}.fork
+	}
+	openGlobalGui{
+		var window = Window("Global settings").front.setInnerExtent(400, 600);
+		window.view.palette_(QPalette.dark);
+		window.view.decorator_(FlowLayout(window.view.bounds));
+		window.view.decorator.left = 25;
+		"Global GUI".postln;
+		Array.fill(3, {
+			|i|
+			var slider = EZSlider.new(window, label:"ASR".at(i), controlSpec: ControlSpec(0, [4,10,10].at(i), 'lin')).value_(1).action_({
+				|e|
+				jonisks.do{
+					|j|
+					var synth = j.synth;
+					synth.set([\a,\s,\r].at(i), e.value);
+				};
+			});
+			slider.setColors(numNormalColor: Color.white);
+		});
 	}
 }
 // This class should handle the SerialPort: initialize it, and pass it to the containing Jonisk objects.

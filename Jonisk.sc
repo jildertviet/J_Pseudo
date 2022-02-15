@@ -1,8 +1,4 @@
 Jonisk{
-	/*
-	This should have a Color obj
-	This should have a reference to a synth
-	*/
 	var <>synth;
 	var <>address = #[0xFF,0xFF,0xFF,0xFF,0xFF,0xFF];
 	var <>	addrToPrint = "0xFF";
@@ -13,7 +9,10 @@ Jonisk{
 	var <>id = nil;
 	var <>bus;
 	var <> batteryPct = 100;
-	var <> brightness = 1;
+	var < brightness = 1; // Getters
+	var < attack = 1;
+	var < sustain = 1;
+	var < release = 1;
 	var <> bLive = false;
 	*new{
 		|index, serial|
@@ -82,4 +81,27 @@ Jonisk{
 		this.send(msg);
 	}
 	// For GUI see JoniskGui.sc
+	trigger{
+		synth.set(\gate, 1.0.rand);
+	}
+	setAttack{
+		|val|
+		attack = val;
+		synth.set(\a, val);
+	}
+	setSustain{
+		|val|
+		sustain = val;
+		synth.set(\s, val);
+	}
+	setRelease{
+		|val|
+		release = val;
+		synth.set(\r, val);
+	}
+	setBrightess{
+		|val|
+		brightness = val;
+		synth.set(\b, val);
+	}
 }
