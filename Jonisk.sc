@@ -9,6 +9,7 @@ Jonisk{
 	var <>id = nil;
 	var <>bus;
 	var <> batteryPct = 100;
+	var <> batteryPctField;
 	var < brightness = 1; // Getters
 	var < attack = 1;
 	var < sustain = 1;
@@ -57,8 +58,10 @@ Jonisk{
 		|c = #[255, 0, 0 ,0]|
 		var msg;
 		color = Color.fromArray(c.at([0,1,2]) / 255).alpha_(c[3] / 255);
-		msg = address ++ [0x05] ++ c ++ end;
 		if(bLive == false, {
+			var data = 0x00!(4*30); // 30 Jonisks
+			c.do{|v, i| data[(id*4)+i] = v};
+			msg = address ++ [0x05] ++ data ++ end;
 			this.send(msg);
 		});
 	}
@@ -99,9 +102,18 @@ Jonisk{
 		release = val;
 		synth.set(\r, val);
 	}
-	setBrightess{
+	setBrightness{
 		|val|
 		brightness = val;
 		synth.set(\b, val);
+	}
+	createBatteryField{
+		batteryPctField = StaticText.new().background_(Color.black.alpha_(0.1)).align_(\center).string_((batteryPct.asString) ++ "%");
+		^ batteryPctField;
+	}
+	setBatteryPct{
+		|v|
+		batteryPct = v;
+		{batteryPctField.string_((batteryPct.asString) ++ "%");}.defer;
 	}
 }
