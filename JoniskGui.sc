@@ -16,6 +16,7 @@
 				\ota, {object.ota()},
 				\battery, {object.requestBattery()},
 				\testEnv, {object.trigger()},
+				\deepsleep, {object.deepSleep()},
 				\setColor, {
 					|e, i|
 					var color = object.color;
@@ -63,9 +64,10 @@
 			["OTA", functions[\ota]],
 			["Battery",functions[\battery]],
 			["TestEnv",functions[\testEnv]],
+			["Sleep",functions[\deepsleep]],
 		].do{
 			|e|
-			Button.new(window, 80@40).string_(e[0]).action_(e[1]);
+			Button.new(window, 60@40).string_(e[0]).action_(e[1]);
 		};
 		colorSliders = Array.fill(4, {
 			|i|

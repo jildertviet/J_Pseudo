@@ -300,6 +300,7 @@ JoniskMain{
 			\ota, {},
 			\battery, {},
 			\testEnv, {jonisks.do{|j| j.trigger()}},
+			\deepsleep, {"Inactive".postln;},
 			\setColor, {
 				|e, i|
 				jonisks.do{

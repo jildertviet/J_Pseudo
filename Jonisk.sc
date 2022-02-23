@@ -116,4 +116,8 @@ Jonisk{
 		batteryPct = v;
 		{batteryPctField.string_((batteryPct.asString) ++ "%");}.defer;
 	}
+	deepSleep{
+		var msg = address ++ [0x10, 0x00, 0x00] ++ end;
+		this.send(msg);
+	}
 }
