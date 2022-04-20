@@ -17,6 +17,7 @@ JoniskMain{
 	var <> lastSeen;
 	var <>states;
 	var <>testPattern;
+	var <>patternDelay = 0.1;
 	*new{
 		^super.new.init();
 	}
@@ -281,13 +282,20 @@ JoniskMain{
 		);
 	}
 	configLights{
+		|mode=1|
 		{
 			jonisks.do{
 				|jonisk, i|
 				var addr = jonisk.address;
 				var id = i;
 				var end = [101,110,100];
-				serial.putAll(addr ++ [0x03, id] ++ end);
+				if(mode == 0, {
+					serial.putAll(addr ++ [0x03, id] ++ end);
+				}, {
+					if(mode == 1, {
+						serial.putAll((0xFF!6) ++ [0x11] ++ addr ++ [id] ++ end);
+					});
+				});
 				0.1.wait;
 			};
 			"Config lights done".postln;
@@ -360,7 +368,7 @@ JoniskMain{
 		Pdef(\joniskTestPattern,
 			Pbind(\type, \triggerJonisk,
 				\jonisk, Pseq(jonisks, inf),
-				\delta, 1
+				\delta, patternDelay
 			)
 		)
 	}

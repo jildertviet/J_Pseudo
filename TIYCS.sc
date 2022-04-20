@@ -7,13 +7,19 @@ TIYCS{
 	var <>noteOn, <>noteOff, <>cc;
 	var <>bingo;
 	*new{
-		^super.new.init();
+		|ip="127.0.0.1"|
+		^super.new.init(ip);
 	}
 	init{
+		|ip|
+		if(ip.isString, {
+			ip = ip!1;
+		});
+		ip = ip.asArray;
 		screens = [
-			NetAddr("127.0.0.2", 5000),
-			NetAddr("192.168.178.204", 5000),
-			NetAddr("127.0.0.3", 5000),
+			NetAddr(ip.wrapAt(0), 5000),
+			NetAddr(ip.wrapAt(1), 5001),
+			NetAddr(ip.wrapAt(2), 5002),
 		];
 
 		size = [1280, 800];
@@ -28,18 +34,55 @@ TIYCS{
 
 		scenes = scenes ++ [
 			["Intro", {
+				var rotateSynth, bus;
+				var window = Window("TIYCS - Intro").front.setInnerExtent(400, 60);
+				var toggleButton = Button.new(window).states_([
+					["Rotate", Color.black, Color.green],
+					["Stop", Color.white, Color.red],
+				]).action_({
+					|button|
+					if(button.value == 1, {
+						bus = Bus.alloc(\control, Server.default);
+						// rotateSynth = {Out.kr(bus, SinOsc.kr(1/4).pow(0.1) * Line.kr(0, 1, 1))}.play;
+						rotateSynth.free; rotateSynth = {Out.kr(bus, VarLag.kr(LFPulse.kr(1/6, 0.95), 1))}.play;
+						routines.add(this.makeRoutine(inf, {
+							|i|
+							bus.get({
+								|val|
+								this.setBus(1, val.linlin(0, 1, 0, 180)); // Rotate
+							});
+						}));
+					}, {
+						rotateSynth.free; bus.free; this.setBus(1, 0);
+						routines.pop.stop;
+					});
+				});
 				var numFrames = (frameRate * 30); // 30 sec
+
+				window.view.palette_(QPalette.dark);
+				window.view.decorator_(FlowLayout(window.view.bounds));
 				this.setScene(0, -1);
 				routines.add(this.makeRoutine(numFrames, {
 					|i|
 					this.setBus(0, linlin(i, 0, numFrames, 0, 2)); // Movement-intensity
 				}));
+				window.view.onClose = { rotateSynth.free; bus.free; this.setBus(1, 0); this.clearRoutines(); };
 			}],
 			["Instructions", {
+				var prevVal = 0;
 				this.setScene(2, -1);
 				this.setBus(0, 0);
 				counter.value_(0);
-				counter.action_({|e|this.setBus(0, e.value)}).focus;
+				counter.action_({|e|
+					var dir = 1;
+					var startPoint = prevVal;
+					if(e.value < prevVal, {dir = -1});
+					routines.add(this.makeRoutine(16, {
+						|i|
+						this.setBus(0, startPoint + ((i/15)*dir));
+					}));
+					prevVal = e.value;
+				}).focus;
 			}],
 			["Countdown",{
 				this.setScene(3, -1);
@@ -53,18 +96,24 @@ TIYCS{
 
 				window.view.palette_(QPalette.dark);
 				window.view.decorator_(FlowLayout(window.view.bounds));
-				height =EZSlider.new(window, label:"Height", controlSpec: ControlSpec(0, 2, 'lin')).value_(2).action_({|e|this.setBus(0, e.value)});
+				height =EZSlider.new(window, label:"Height", controlSpec: ControlSpec(0, 2, 'lin')).value_(1).action_({|e|this.setBus(0, e.value)});
 				speed = EZSlider.new(window, label:"Speed", controlSpec: ControlSpec(0.2, 10, 'lin', 0.001)).value_(1).action_({|e|this.setBus(1, e.value)});
 				speed.setColors(numNormalColor: Color.white);
 				height.setColors(numNormalColor: Color.white);
 				window.bounds_(window.bounds + [0,80,0,0]); // Move 80 px to top
 				this.setScene(4, -1);
-				this.setBus(0, 2); // Height
+				this.setBus(0, 1); // Height
 				this.setBus(1, 1); // TravelSpeed
 
 				this.setBus(3, 0);
 				this.setBus(4, 0);
 				this.setBus(5, 0);
+
+				3.do{
+					|i|
+					this.setBus(6, [1,0,2].at(i), i); // Offset all screens
+				};
+
 			}],
 			["Route"],
 			["Commercials", {
@@ -80,9 +129,42 @@ TIYCS{
 			}
 			],
 			["Benzine", {
-				this.setScene(9, 1);
-				this.setScene(16, [0,2]); // Outer two to black
+				var window = Window("TIYCS - alarm").front.setInnerExtent(400, 60 + 30);
+				var fillPct, redFill, fillButton;
+				var toggleVal = 1;
+
+				noteOn.add(MIDIdef.noteOn(\alarmOn, {|val, num| redFill.valueAction = 255; ("Note on " + num).postln}, 16, 1));
+				noteOff.add(MIDIdef.noteOff(\alarmOff, {|val, num| redFill.valueAction = 0; ("Note off " + num).postln}, 16, 1));
+
+				this.setScene(9, -1); // All to scene
+				// this.setScene(16, [0,2]); // Outer two to black
 				this.setBus(0, 0);
+				this.setBus(3, 255, 1);
+				this.setBus(3, 0, [0,2]); // Outter two, don't dislay meter
+
+				window.view.palette_(QPalette.dark);
+				window.view.decorator_(FlowLayout(window.view.bounds));
+				fillPct = EZSlider.new(window, label:"fillPct", controlSpec: ControlSpec(1, 100, 'lin')).value_(100).action_({|e|this.setBus(4, e.value)}).valueAction = 100;
+				redFill = EZSlider.new(window, label:"redFill", controlSpec: ControlSpec(0, 255, 'lin')).value_(255).action_({|e|this.setBus(5, e.value)}).valueAction = 255;
+				fillButton = Button.new(window).string_("Fill").action_({
+					var numFrames = (frameRate * 15); // 30 sec
+					routines.add(this.makeRoutine(numFrames, {
+						|i|
+						this.setBus(0, linlin(i, 0, numFrames, 0, 145)); // Movement-intensity
+					}));
+				});
+				noteOn.add(MIDIdef.noteOn(\fillTank, {|val, num| fillButton.valueAction = 1; }, 18, 1));
+				fillPct.setColors(numNormalColor: Color.white);
+				redFill.setColors(numNormalColor: Color.white);
+				window.bounds_(window.bounds + [0,80 + 30,0,0]); // Move 80 px to top
+				window.view.keyDownAction = {
+					|doc, char, mod, unicode, keycode, key|
+					if(keycode == 49, {
+						toggleVal = toggleVal + 1 % 2;
+						redFill.valueAction = toggleVal * 255;
+					});
+				};
+				window.onClose = {MIDIdef(\alarmOn.free()); MIDIdef(\alarmOff).free(); MIDIdef(\fillTank).free};
 			}],
 			["ReturnToShip", {
 				this.setScene(10);
