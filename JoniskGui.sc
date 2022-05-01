@@ -51,6 +51,13 @@
 					|e|
 					object.setBrightness(e.value);
 				},
+				\getBrightnessAdd, {
+					object.brightnessAdd;
+				},
+				\setBrightnessAdd, {
+					|e|
+					object.setBrightnessAdd(e.value);
+				},
 				\getAddress, {
 					object.addrToPrint.asString
 				},
@@ -89,9 +96,19 @@
 			});
 			slider.setColors(numNormalColor: Color.white);
 		});
-		EZSlider.new(window, label:"Brightness", controlSpec: ControlSpec(0, 1, 'lin', 0.01), labelWidth: 80).value_(functions[\getBrightness].value()).action_({
+		EZSlider.new(window,
+			label:"Brightness",
+			controlSpec: ControlSpec(0, 1, 'lin', 0.01),
+			labelWidth: 80).value_(functions[\getBrightness].value()).action_({
 			|e|
 			functions[\setBrightness].value(e);
+		}).setColors(numNormalColor: Color.white);
+		EZSlider.new(window,
+			label:"BrightnessAdd",
+			controlSpec: ControlSpec(0, 1, 'lin', 0.01),
+			labelWidth: 80).value_(functions[\getBrightnessAdd].value()).action_({
+			|e|
+			functions[\setBrightnessAdd].value(e);
 		}).setColors(numNormalColor: Color.white);
 		window.view.decorator.left = 25;
 		window.view.decorator.top = window.view.decorator.top + 25;

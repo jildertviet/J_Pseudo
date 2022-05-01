@@ -18,6 +18,9 @@ JoniskMain{
 	var <>states;
 	var <>testPattern;
 	var <>patternDelay = 0.1;
+	var <>sequence;
+	var <>seqIndex = 0;
+	var guiDict;
 	*new{
 		^super.new.init();
 	}
@@ -32,6 +35,8 @@ JoniskMain{
 		lastSeen = (0)!jonisks.size;
 		this.checkLastSeen();
 		this.iniTestPattern();
+		this.initMIDI();
+		this.initGuiDict();
 // });
 	}
 	readConfig{
@@ -195,7 +200,7 @@ JoniskMain{
 			|v|
 			var end = [101,110,100];
 			var msg = (0xFF!6) ++ [0x05] ++ ((v*255).asInteger) ++ end;
-			msg.postln;
+			// msg.postln;
 			serial.putAll(msg);
 		});
 	}
@@ -303,7 +308,39 @@ JoniskMain{
 	}
 	openGlobalGui{
 		var bounds;
-		var guiWindow = Jonisk.getGuiWindow(nil, Dictionary.newFrom([
+		var guiWindow;
+		guiWindow = Jonisk.getGuiWindow(nil, guiDict);
+		bounds = guiWindow.bounds;
+		guiWindow.bounds_(bounds + Rect(window.bounds.width, 0, 0, 0));
+	}
+	iniTestPattern{
+		var ids = jonisks.collect({|e|e.id});
+		Event.addEventType(\triggerJonisk, {
+			~jonisk.trigger();
+			~jonisk.id.postln;
+		});
+		Pdef(\joniskTestPattern,
+			Pbind(\type, \triggerJonisk,
+				\jonisk, Pseq(jonisks, inf),
+				\delta, patternDelay
+			)
+		)
+	}
+	toggleTestPatttern {
+		var pattern = Pdef(\joniskTestPattern);
+		if(pattern.isPlaying, {
+			pattern.pause;
+		}, {
+			pattern.play;
+		});
+	}
+	triggerNextInSeq{
+		var id = sequence.wrapAt(seqIndex);
+		seqIndex = seqIndex + 1;
+		jonisks[id].trigger();
+	}
+	initGuiDict{
+		guiDict = Dictionary.newFrom([
 			\test, {"Inactive".postln},
 			\ota, {},
 			\battery, {},
@@ -349,36 +386,28 @@ JoniskMain{
 					object.setBrightness(e.value);
 				}
 			},
+			\getBrightnessAdd, {
+				1
+			},
+			\setBrightnessAdd, {
+				|e|
+				jonisks.do{ |object|
+					object.setBrightnessAdd(e.value);
+				}
+			},
 			\getAddress, {
 				"All Jonisks";
 			},
 			\getBus, {
 				jonisks[0].bus;
 			}
-		]));
-		bounds = guiWindow.bounds;
-		guiWindow.bounds_(bounds + Rect(window.bounds.width, 0, 0, 0));
+		]);
 	}
-	iniTestPattern{
-		var ids = jonisks.collect({|e|e.id});
-		Event.addEventType(\triggerJonisk, {
-			~jonisk.trigger();
-			~jonisk.id.postln;
-		});
-		Pdef(\joniskTestPattern,
-			Pbind(\type, \triggerJonisk,
-				\jonisk, Pseq(jonisks, inf),
-				\delta, patternDelay
-			)
-		)
-	}
-	toggleTestPatttern {
-		var pattern = Pdef(\joniskTestPattern);
-		if(pattern.isPlaying, {
-			pattern.pause;
-		}, {
-			pattern.play;
-		});
+	initMIDI{
+		MIDIdef.cc(\joniskBrightness, {|val, note| "Brightness MIDI".postln; guiDict[\setBrightness].value(val/128)}, 1);
+		MIDIdef.cc(\joniskAttack, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 1), 0)}, 2);
+		MIDIdef.cc(\joniskSustain, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 2), 1)}, 3);
+		MIDIdef.cc(\joniskRelease, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 3), 2)}, 4);
 	}
 }
 // This class should handle the SerialPort: initialize it, and pass it to the containing Jonisk objects.
