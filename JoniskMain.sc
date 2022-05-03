@@ -21,6 +21,7 @@ JoniskMain{
 	var <>sequence;
 	var <>seqIndex = 0;
 	var guiDict;
+	var <>slidersDict;
 	*new{
 		^super.new.init();
 	}
@@ -308,10 +309,13 @@ JoniskMain{
 	}
 	openGlobalGui{
 		var bounds;
-		var guiWindow;
-		guiWindow = Jonisk.getGuiWindow(nil, guiDict);
-		bounds = guiWindow.bounds;
-		guiWindow.bounds_(bounds + Rect(window.bounds.width, 0, 0, 0));
+		var globalJoniskWindow;
+		var windowAndSliders = Jonisk.getGuiWindow(nil, guiDict);
+		slidersDict = windowAndSliders[1];
+		globalJoniskWindow = windowAndSliders[0];
+		bounds = globalJoniskWindow.bounds;
+		globalJoniskWindow.bounds_(bounds + Rect(window.bounds.width, 0, 0, 0));
+		// globalGuiSliders
 	}
 	iniTestPattern{
 		var ids = jonisks.collect({|e|e.id});
@@ -405,9 +409,10 @@ JoniskMain{
 	}
 	initMIDI{
 		MIDIdef.cc(\joniskBrightness, {|val, note| "Brightness MIDI".postln; guiDict[\setBrightness].value(val/128)}, 1);
-		MIDIdef.cc(\joniskAttack, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 1), 0)}, 2);
-		MIDIdef.cc(\joniskSustain, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 2), 1)}, 3);
-		MIDIdef.cc(\joniskRelease, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 3), 2)}, 4);
+		MIDIdef.cc(\joniskBrightnessAdd, {|val, note| "Brightness Add MIDI".postln; guiDict[\setBrightnessAdd].value(val/128)}, 2);
+		MIDIdef.cc(\joniskAttack, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 1), 0)}, 5);
+		MIDIdef.cc(\joniskSustain, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 2), 1)}, 6);
+		MIDIdef.cc(\joniskRelease, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 3), 2)}, 7);
 	}
 }
 // This class should handle the SerialPort: initialize it, and pass it to the containing Jonisk objects.

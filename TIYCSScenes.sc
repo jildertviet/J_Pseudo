@@ -1,5 +1,6 @@
 + TIYCS {
 	initScenes {
+		var buttonSize = Rect(0, 0, 100, 30);
 		scenes = scenes ++ [
 			["None", {
 				this.setScene(16);
@@ -32,7 +33,7 @@
 					});
 				});
 				var numFrames = (frameRate * 30); // 30 sec
-
+				childWindows.add(window);
 				window.view.palette_(QPalette.dark);
 				window.view.decorator_(FlowLayout(window.view.bounds));
 				this.setScene(0, -1);
@@ -57,6 +58,7 @@
 					}));
 					prevVal = e.value;
 				}).focus;
+				this.clearRoutines();
 			}],
 			["Countdown",{
 				this.setScene(3, -1);
@@ -65,21 +67,30 @@
 				counter.action_({|e|this.setBus(0, e.value)}).focus;
 			}],
 			["Stars", {
-				var window = Window("TIYCS - Stars").front.setInnerExtent(400, 30 * 5);
-				var speed, height, map, startRoute, planetID;
-
+				var window = Window("TIYCS - Stars").front.setInnerExtent(400, 30 * 8);
+				var speed, height, map, startRoute, planetID, overlay, joniskPos;
+				var moveJonisk, emptyBenzine;
+				var q;
+				childWindows.add(window);
+				// var buttonSize;
 				window.view.palette_(QPalette.dark);
-				window.view.decorator_(FlowLayout(window.view.bounds));
+				// window.view.decorator_(FlowLayout(window.view.bounds));
+				q = window.addFlowLayout();
+
 				height = EZSlider.new(window, label:"Height", controlSpec: ControlSpec(0, 2, 'lin')).action_(
-					{|e|this.setBus(0, e.value)}).valueAction = 1;
+					{|e|this.setBus(0, e.value)}).valueAction = 0; // Start @ ground
 				speed = EZSlider.new(window, label:"Speed", controlSpec: ControlSpec(0.2, 10, 'lin', 0.001)).action_(
 					{|e|this.setBus(1, e.value)}).valueAction = 7;
 				map = EZSlider.new(window, label:"Map", controlSpec: ControlSpec(0, 1, 'lin', 0.001)).action_(
 					{|e|this.setBus(8, e.value, 1)}).valueAction = 0;
 				planetID = EZSlider.new(window, label:"planetID", controlSpec: ControlSpec(0, 1, 'lin', 1)).action_(
 					{|e|this.setBus(7, e.value)}).valueAction = 0;
+				overlay = EZSlider.new(window, label:"overlay", controlSpec: ControlSpec(0, 255, 'lin', 0.001)).action_(
+					{|e|this.setBus(9, e.value)}).valueAction = 0;
+				joniskPos = EZSlider.new(window, label:"joniskPos", controlSpec: ControlSpec(0, 200, 'lin', 1)).action_(
+					{|e|this.setBus(14, e.value)}).valueAction = 0;
 
-				startRoute = Button.new(window).string_("Start route").action_({
+				startRoute = Button.new(window, buttonSize).string_("Start route").action_({
 					var numFrames = 300 * frameRate; // 300 sec
 					this.clearRoutines();
 					this.routines.add(this.makeRoutine(numFrames, {
@@ -87,10 +98,29 @@
 						this.setBus(9, i.linlin(0, numFrames, 0, 1));
 					}));
 				});
+				moveJonisk = Button.new(window, buttonSize).string_("Move Jonisk").action_({
+					var numFrames = 300 * frameRate; // 300 sec
+					this.clearRoutines();
+					this.routines.add(this.makeRoutine(numFrames, {
+						|i|
+						// this.setBus(9, i.linlin(0, numFrames, 0, 1));
+						{joniskPos.valueAction = i.linlin(0, numFrames, 0, 200);}.defer;
+					}));
+				}).bounds.width_(100);
+				emptyBenzine = Button.new(window, buttonSize).string_("Empty benzine").action_({
+					var numFrames = 50 * frameRate; // 60sec
+					this.clearRoutines();
+					this.routines.add(this.makeRoutine(numFrames, {
+						|i|
+						this.setBus(10, i.linlin(0, numFrames, 150, 0));
+						// {joniskPos.valueAction = i.linlin(0, numFrames, 0, 200);}.defer;
+					}));
+				});
+				[startRoute, moveJonisk, emptyBenzine].do{|e| e.bounds().resizeBy(100, 0)};
+				this.setBus(10, 150);
 
-				speed.setColors(numNormalColor: Color.white);
-				height.setColors(numNormalColor: Color.white);
-				map.setColors(numNormalColor: Color.white);
+				[speed,height,map,joniskPos,overlay,planetID].do{|e| e.setColors(numNormalColor: Color.white)};
+
 				window.bounds_(window.bounds + [0,20 + window.bounds.height,0,0]); // Move 80 px to top
 				this.setScene(4, -1);
 
@@ -102,7 +132,7 @@
 					|i|
 					this.setBus(6, [0,1,2].at(i) * -1, i); // Offset all screens
 				};
-				~forNextStarScene = [height, speed];
+				~forNextStarScene = [height, speed, planetID];
 			}],
 			["Commercials", {
 				var window = Window("TIYCS - Commercials").front.setInnerExtent(400, 30);
@@ -113,6 +143,7 @@
 					Button().string_("Three").action_({this.setBus(0, 0); this.setScene(6, -1); this.eventById(1, 2)}),
 					Button().string_("Stop").action_({this.setBus(0, 0); this.setScene(6, -1); this.eventById(1, -1)})
 				];
+				childWindows.add(window);
 				this.setScene(6);
 				this.setBus(0, 0); // Bool
 				window.bounds_(window.bounds + [0,80,0,0]); // Move 80 px to top
@@ -126,14 +157,16 @@
 			],
 			["Stars 2", {
 				var controls = ~forNextStarScene;
-				scenes[5][1].value(); // Execute Stars default
-				controls[0].valueAction = 2; // Height
-				controls[1].valueAction = 2; // Speed
+				scenesDict[\Stars][1].value(); // Execute Stars default
+				controls[0].value_(2).valueAction = 2; // Height
+				controls[1].value_(2).valueAction = 2; // Speed
+				controls[2].value_(1).valueAction = 1; // Planet
 			}],
 			["Benzine", {
 				var window = Window("TIYCS - alarm").front.setInnerExtent(400, 60 + 30);
 				var fillPct, redFill, fillButton;
 				var toggleVal = 1;
+				childWindows.add(window);
 
 				MIDIdef.noteOn(\alarmOn, {
 					|val, num|
@@ -148,9 +181,12 @@
 
 				this.setScene(9, -1); // All to scene
 				// this.setScene(16, [0,2]); // Outer two to black
-				this.setBus(0, 0);
-				this.setBus(3, 255, 1);
+				this.setBus(10, 0); // Benzine level
+				this.setBus(3, 255, 1); // Show meter
 				this.setBus(3, 0, [0,2]); // Outter two, don't dislay meter
+				this.setBus(13, 255); // Show stars layer
+				this.setBus(9, 0); // Hide dashboard overlay
+				this.setBus(7, 1); // Planet ID
 
 				window.view.palette_(QPalette.dark);
 				window.view.decorator_(FlowLayout(window.view.bounds));
@@ -160,11 +196,11 @@
 					var numFrames = (frameRate * 15); // 30 sec
 					routines.add(this.makeRoutine(numFrames, {
 						|i|
-						this.setBus(0, linlin(i, 0, numFrames, 0, 145)); // Movement-intensity
+						this.setBus(10, linlin(i, 0, numFrames, 0, 180)); // Movement-intensity
 					}));
 				});
-				noteOn.add(MIDIdef.noteOn(\fillTank, {|val, num| {fillButton.valueAction = 1;}.defer }, 25, chan: 14));
-				MIDIdef.noteOn(\switchScene, {|val, num| {scenes[8][1].value();}.defer; MIDIdef(\switchScene).clear; /* Return to ship */ }, 26, chan: 14);
+				noteOn.add(MIDIdef.noteOn(\fillTank, {|val, num| "Fill tank".postln; {fillButton.valueAction = 1;}.defer }, 25, chan: 14));
+				MIDIdef.noteOn(\switchScene, {|val, num| "Switch to return scene".postln; {scenesDict[\ReturnToShip][1].value();}.defer; MIDIdef(\switchScene).clear; /* Return to ship */ }, 26, chan: 14);
 				fillPct.setColors(numNormalColor: Color.white);
 				redFill.setColors(numNormalColor: Color.white);
 				window.bounds_(window.bounds + [0,80 + 30,0,0]); // Move 80 px to top
@@ -176,6 +212,9 @@
 					});
 				};
 				window.onClose = {MIDIdef(\alarmOn.free()); MIDIdef(\alarmOff).free(); MIDIdef(\fillTank).free};
+				if(~j != nil, {
+					~j.jonisks.do{|j| j.synth.set(\a, 0.0001); j.synth.set(\s, 0.3); j.synth.set(\r, 0.0001);};
+				});
 			}],
 			["ReturnToShip", {
 				"ReturnToShip".postln;
@@ -213,7 +252,7 @@
 					// RecordBuf.ar(Lag.ar(input, 0.001), buffer.bufnum);
 					RecordBuf.ar(LPF.ar(input, 400), buffer.bufnum);
 					0
-				}.play;
+				};
 				var updateWaveformT = {
 					inf.do{
 						buffer.getToFloatArray(count: -1, action:{
@@ -229,7 +268,7 @@
 						(1/30).wait;
 					}
 				};
-				if(Server.local.serverRunning, {updateWaveformT = updateWaveformT.fork}, {"Server not booted!".error});
+				this.clearRoutines();
 				// this.setScene(11, 1);
 				this.setScene(12, [0,1,2]);
 				this.setBus(0, 255, 1); // Show captain picto
@@ -239,6 +278,38 @@
 					// buffer.free;
 					recordSynth.free;
 				};
+				counter.action_({
+					|e|
+					"X".postln;
+					e.value.postln;
+					switch(e.value.asInteger,
+						0, { // Calling
+							this.setBus(0, 0); // All waveform black
+							this.setBus(1, 255, 1); // Center to incoming call icon
+							this.setBus(1, 0, [0,2]); // Others not
+							this.setBus(2, 0); // During call to 0
+							this.setBus(2, 0); // During call to 0
+							this.setBus(3, 0); // Tel icon
+							"Incoming call".postln;
+						},
+						1, { // During call
+							this.setBus(2, 255, 1); // During call icon
+							this.setBus(0, 150); // All waveform black
+							this.setBus(1, 0, 1); // Center to incoming call icon OFF
+							this.setBus(3, 255, 0); // Tel icon
+							if(Server.local.serverRunning, {updateWaveformT = updateWaveformT.fork}, {"Server not booted!".error});
+							recordSynth.play;
+							this.makeRoutine(59 * this.frameRate, {
+								|i|
+								var second = i / this.frameRate;
+								second = second.floor;
+								this.setBus(4, second, 1);
+							});
+						},
+						2, {}
+					);
+				});
+				counter.focus.valueAction = 0;
 				// Midinote 34 starts the samples (@ initMidi)
 			}],
 			["Bingo", {
@@ -249,6 +320,7 @@
 				BACKGROUND_AND_WHEEL
 				*/
 				var window = Window("TIYCS - Bingo").front.setInnerExtent(400, 30);
+				childWindows.add(window);
 				this.setScene(13, -1);
 				this.setBus(0, 3, 1); // Bingo mode
 				this.setBus(0, 0, [0,2]); // Bingo mode
@@ -285,6 +357,7 @@
 					})})],
 				);
 				if(~j != nil, {
+					~j.slidersDict[\brightness].valueAction = 0.35;
 					~j.jonisks.do{|j|
 						var c = [[0,0,0,255],[0,0,255,0]].choose;
 						j.synth.set(\rgbw, c/255); // Scaled to 1
@@ -328,7 +401,12 @@
 				"BLACKOUT".postln;
 			}],
 			["Einde", {
+				this.valyueById(2, 0); // Black
 				this.setScene(18);
+				{
+					10.wait;
+					this.valyueById(2, 255);
+				}.fork;
 			}]
 		];
 		t = List();

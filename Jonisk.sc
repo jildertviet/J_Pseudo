@@ -41,6 +41,8 @@ Jonisk{
 			var env = EnvGen.kr(Env.linen(a, s, r, level, curve: curve), Changed.kr(gate));
 			var brightness = Mix.kr([env, brightnessAdd]).min(1);
 			var noise = LFDNoise1.ar(1/4, noiseMul).abs.min(1);
+			amp = Lag.kr(amp, 1);
+			brightness = Lag.kr(brightness, 1);
 			output = Lag2.kr(brightness , lagTime) + noise * rgbw;
 			output = (output + rgbwAdd).min(1);
 			Out.kr(out, output * amp);

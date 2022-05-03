@@ -10,6 +10,8 @@ TIYCS{
 	var <>onSwitch;
 	var <>buffer, <>captainSample;
 	var <> blackToggle = 0;
+	var <> childWindows;
+	var <> bShiftPressed = false;
 	*new{
 		|ip="127.0.0.1"|
 		^super.new.init(ip);
@@ -38,6 +40,7 @@ TIYCS{
 		buffer = Buffer.alloc(Server.local, 400*3);
 		captainSample = Buffer.readChannel(Server.local, "/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/capt weg kwijt v2.wav", channels: 1);
 		this.initScenes();
+		childWindows = List.new();
 	}
 	makeRoutine{
 		|num=1, func|
@@ -108,12 +111,17 @@ TIYCS{
 		var window = Window("TIYCS - Scenes").front;
 		var a = { { Button(window) } ! numColumns } ! numRows;
 		var buttonMatrix = View().layout_(VLayout(*a.collect { |x| HLayout(*x) }));
+		var brightnessSlider;
 		window.view.palette_(QPalette.dark);
 		counter = NumberBox().step_(1).normalColor_(Color.white);
+		// brightnessSlider = Slider.new(window, label:"brightness", controlSpec: ControlSpec(0, 255, 'lin', 0.001)).action_(
+		// {|e| this.valyueById(2, e.value * 2);}).orientation_(\horizontal).valueAction = 255;
+
 
 		window.layout = VLayout(
 			[buttonMatrix],
 			[counter],
+			// [brightnessSlider, 0.1]
 		);
 		// Assign scene-functions to buttons
 		a = a.reshape(scenes.size, 1);
@@ -122,6 +130,9 @@ TIYCS{
 			e.string_(scenes[i][0]);
 			e.action_({
 				onSwitch.value();
+				if(bShiftPressed == false, {
+					this.closeChildWindows();
+				});
 				onSwitch = {}; // Clear
 				this.clearRoutines;
 				scenes[i][1].value()
@@ -132,7 +143,14 @@ TIYCS{
 			// [doc, char, mod, unicode, keycode, key].postln;
 			switch(key,
 				70, { this.whiteFrame(3);}, // 'f'
-				71, { this.blackFrame(3);} // 'g'
+				71, { this.blackFrame(3);}, // 'g'
+				16777248, {bShiftPressed = true},
+			);
+		};
+		window.view.keyUpAction = {
+			|doc, char, mod, unicode, keycode, key|
+			switch(key,
+				16777248, {bShiftPressed = false},
 			);
 		};
 	}
@@ -154,18 +172,33 @@ TIYCS{
 	}
 	initDefaultMidi{
 		if(~j != nil, {~j.sequence = [0,1,2,3,4]});
-		MIDIdef.cc(\brightness, {|value, note| this.valyueById(2, value * 2); "Brightness".postln}, 8);
-		MIDIdef.noteOn(\captainScene, {|value, note| scenes[9][1].value(); "Captain scene".postln}, 34, chan: 14);
+		MIDIdef.cc(\brightnessVisuals, {|value, note| this.valyueById(2, value * 2); "Brightness".postln}, 8);
+		// MIDIdef.cc(\brightness, {|value, note| this.valyueById(2, value * 2); "Brightness".postln}, 8);
+		// MIDIdef.noteOn(\captainScene, {|value, note| scenes[9][1].value(); "Captain scene".postln}, 34, chan: 14);
 		MIDIdef.noteOn(\arp, {
 			|value, note|
 			"ARP".postln;
 			// ~j.jonisks.choose.trigger();
 			~j.triggerNextInSeq();
 		}, noteNum: 36 + (0..30), chan: 14);
-		MIDIdef.noteOn(\blackout, {
+		MIDIdef.noteOn(\blackout, { // Pad 1
 			|val, num|
 			scenesDict[\BLACKOUT][1].value();
-		}, 0, 0, -1625549786);
+		}, 0, chan: 0, srcID: -1625549786);
+		MIDIdef.noteOn(\jonisksToWhite, { // Pad 8
+			|val, num|
+			"All Jonisks to white".postln;
+			if(~j != nil, {
+				~j.slidersDict[\rgbw].do{|e, i| e.valueAction = [0,0,0,255].at(i)}; // Slider at range 0-255
+				~j.slidersDict[\brightness].valueAction = 0.35;
+				~j.jonisks.do{|j|
+					var c = [0,0,0,255];
+					j.synth.set(\rgbw, c/255); // Scaled to 1
+					j.setColor(c);
+					j.setBrightness(0.35);
+				};
+			});
+		}, 7, chan: 0, srcID: -1625549786);
 	}
 	whiteFrame{
 		|dur=1|
@@ -179,5 +212,8 @@ TIYCS{
 			blackToggle = blackToggle + 1 % 2;
 		});
 		this.valyueById(17, blackToggle);
+	}
+	closeChildWindows{
+		childWindows.do{|w|w.close};
 	}
 }

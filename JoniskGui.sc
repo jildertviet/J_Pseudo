@@ -6,6 +6,7 @@
 		var id = if(object != nil, {object.id}, {"X"});
 		var colorSliders;
 		var windowName = if(id != nil, {"Jonisk " ++ id.asString}, {"Jonisk x"});
+		var dict = Dictionary();
 		window = Window(windowName).front.setInnerExtent(400, 600);
 		window.view.palette_(QPalette.dark);
 		window.view.decorator_(FlowLayout(window.view.bounds));
@@ -76,7 +77,7 @@
 			|e|
 			Button.new(window, 60@40).string_(e[0]).action_(e[1]);
 		};
-		colorSliders = Array.fill(4, {
+		dict[\rgbw] = colorSliders = Array.fill(4, {
 			|i|
 			var slider = EZSlider.new(window, label:"RGBW".at(i), controlSpec: ControlSpec(0, 255, 'lin')).value_(functions[\getColor].value(i)).action_({
 				|e|
@@ -85,7 +86,7 @@
 			);
 			slider.setColors(numNormalColor: Color.white);
 		});
-		Array.fill(3, {
+		dict[\asr] = Array.fill(3, {
 			|i|
 			// var functions = [this.setAttack, this.setSustain, this.setRelease];
 			var slider = EZSlider.new(window, label:"ASR".at(i), controlSpec: ControlSpec(0, [4,10,10].at(i), 'lin')).value_(functions[\getEnv].value(i)).action_({
@@ -96,14 +97,14 @@
 			});
 			slider.setColors(numNormalColor: Color.white);
 		});
-		EZSlider.new(window,
+		dict[\brightness] = EZSlider.new(window,
 			label:"Brightness",
 			controlSpec: ControlSpec(0, 1, 'lin', 0.01),
 			labelWidth: 80).value_(functions[\getBrightness].value()).action_({
 			|e|
 			functions[\setBrightness].value(e);
 		}).setColors(numNormalColor: Color.white);
-		EZSlider.new(window,
+		dict[\brightnessAdd] = EZSlider.new(window,
 			label:"BrightnessAdd",
 			controlSpec: ControlSpec(0, 1, 'lin', 0.01),
 			labelWidth: 80).value_(functions[\getBrightnessAdd].value()).action_({
@@ -116,7 +117,8 @@
 		window.view.decorator.left = 25;
 		window.view.decorator.top = window.view.decorator.top + 30;
 		Stethoscope.new(Server.default, functions[\getBus].value().numChannels, functions[\getBus].value().index, rate: 'control', view: window.view);
-		^window;
+
+		^[window, dict];
 	}
 	gui{
 		^Jonisk.getGuiWindow(this);
