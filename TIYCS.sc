@@ -216,4 +216,12 @@ TIYCS{
 	closeChildWindows{
 		childWindows.do{|w|w.close};
 	}
+	allFullscreen{
+		|value=1|
+		screens.do{|s| s.sendMsg("/eventById", 5, value);};
+	}
+	setTexCoord{
+		|screenID=0, id=0, x=0, y=0|
+		screens[screenID].sendMsg("/eventById", 4, id, x, y);
+	}
 }

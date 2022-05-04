@@ -168,6 +168,11 @@
 				var toggleVal = 1;
 				childWindows.add(window);
 
+				~j.slidersDict[\rgbw].do{|e, i| e.valueAction = [255,0,0,0].at(i)}; // Slider at range 0-255
+				~j.slidersDict[\asr].do{|e, i| e.valueAction = [0, 0.5, 0].at(i)};
+				~j.slidersDict[\brightness].valueAction = 0.35;
+				~j.slidersDict[\brightnessAdd].valueAction = 0;
+
 				MIDIdef.noteOn(\alarmOn, {
 					|val, num|
 					{redFill.valueAction = 255;}.defer; ("Note on " + num).postln;
@@ -404,7 +409,7 @@
 				this.valyueById(2, 0); // Black
 				this.setScene(18);
 				{
-					10.wait;
+					5.wait;
 					this.valyueById(2, 255);
 				}.fork;
 			}]
