@@ -224,4 +224,59 @@ TIYCS{
 		|screenID=0, id=0, x=0, y=0|
 		screens[screenID].sendMsg("/eventById", 4, id, x, y);
 	}
+	mappingGui{
+		|screenID=0|
+		var aspectRatio = 1280/800;
+		var points = [[0,0],[1,0],[1,1],[0,1]];
+		var size = [300*aspectRatio,300];
+		var padding = 10;
+		var w = Window("mapping screen " ++ screenID, Rect(100, 200, size[0], size[1])).front;
+		var r= 15;
+		var updateFunction;
+		w.drawFunc = { |v|
+			points.postln;
+			Pen.fillColor = Color.blue;
+			Pen.strokeColor = Color.red;
+			points.do{
+				|p, i|
+				var a = Point(p[0] * (size[0] - (padding * 2)) + padding, p[1] * (size[1] - (padding * 2)) + padding);
+				var b = Point(points[(i+1)%points.size][0] * (size[0] - (padding * 2)) + padding, points[(i+1)%points.size][1] * (size[1] - (padding * 2)) + padding);
+				Pen.line(a, b);
+			};
+			Pen.fillStroke;
+		};
+		updateFunction = {
+			|view, x, y|
+			var smallestD = 10000;
+			var index = 0;
+			x = x - (padding) / (size[0] - (padding * 2));
+			y = y - (padding) / (size[1] - (padding * 2));
+			// [x,y].postln;
+			x =	x.max(0).min(1);
+			y = y.max(0).min(1);
+			// Find closest point
+			points.do{
+				|p, i|
+				var absX = (p[0] - x).abs;
+				var absY = (p[1] - y).abs;
+				var d = sqrt(absX.pow(2) + absY.pow(2));
+				if(d < smallestD, {
+					smallestD = d;
+					index = i;
+				});
+			};
+			// Update points
+			this.setTexCoord(screenID, index, (x * this.getWidth()).postln, y * this.getHeight());
+			points[index] = [x,y];
+			w.refresh;
+		};
+		w.view.mouseDownAction_(updateFunction);
+		w.view.mouseMoveAction_(updateFunction);
+	}
+	getWidth{
+		^size[0]
+	}
+	getHeight{
+		^size[1]
+	}
 }

@@ -100,7 +100,7 @@
 				});
 				moveJonisk = Button.new(window, buttonSize).string_("Move Jonisk").action_({
 					var numFrames = 300 * frameRate; // 300 sec
-					this.clearRoutines();
+					// this.clearRoutines();
 					this.routines.add(this.makeRoutine(numFrames, {
 						|i|
 						// this.setBus(9, i.linlin(0, numFrames, 0, 1));
@@ -109,7 +109,7 @@
 				}).bounds.width_(100);
 				emptyBenzine = Button.new(window, buttonSize).string_("Empty benzine").action_({
 					var numFrames = 50 * frameRate; // 60sec
-					this.clearRoutines();
+					// this.clearRoutines();
 					this.routines.add(this.makeRoutine(numFrames, {
 						|i|
 						this.setBus(10, i.linlin(0, numFrames, 150, 0));
@@ -168,10 +168,12 @@
 				var toggleVal = 1;
 				childWindows.add(window);
 
-				~j.slidersDict[\rgbw].do{|e, i| e.valueAction = [255,0,0,0].at(i)}; // Slider at range 0-255
-				~j.slidersDict[\asr].do{|e, i| e.valueAction = [0, 0.5, 0].at(i)};
-				~j.slidersDict[\brightness].valueAction = 0.35;
-				~j.slidersDict[\brightnessAdd].valueAction = 0;
+				if(~j != nil, {
+					~j.slidersDict[\rgbw].do{|e, i| e.valueAction = [255,0,0,0].at(i)}; // Slider at range 0-255
+					~j.slidersDict[\asr].do{|e, i| e.valueAction = [0, 0.5, 0].at(i)};
+					~j.slidersDict[\brightness].valueAction = 0.35;
+					~j.slidersDict[\brightnessAdd].valueAction = 0;
+				});
 
 				MIDIdef.noteOn(\alarmOn, {
 					|val, num|
