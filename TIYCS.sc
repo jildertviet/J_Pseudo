@@ -12,6 +12,7 @@ TIYCS{
 	var <> blackToggle = 0;
 	var <> childWindows;
 	var <> bShiftPressed = false;
+	var mappingPoints;
 	*new{
 		|ip="127.0.0.1"|
 		^super.new.init(ip);
@@ -41,6 +42,7 @@ TIYCS{
 		captainSample = Buffer.readChannel(Server.local, "/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/capt weg kwijt v2.wav", channels: 1);
 		this.initScenes();
 		childWindows = List.new();
+		mappingPoints = [[0,0],[1,0],[1,1],[0,1]]!3;
 	}
 	makeRoutine{
 		|num=1, func|
@@ -233,6 +235,9 @@ TIYCS{
 		var w = Window("mapping screen " ++ screenID, Rect(100, 200, size[0], size[1])).front;
 		var r= 15;
 		var updateFunction;
+		var lastMovedPoint = 0;
+		points = mappingPoints[screenID];
+		w.onClose_({mappingPoints[screenID] = points});
 		w.drawFunc = { |v|
 			points.postln;
 			Pen.fillColor = Color.blue;
@@ -265,6 +270,7 @@ TIYCS{
 					index = i;
 				});
 			};
+			lastMovedPoint = index;
 			// Update points
 			this.setTexCoord(screenID, index, (x * this.getWidth()).postln, y * this.getHeight());
 			points[index] = [x,y];
@@ -272,6 +278,29 @@ TIYCS{
 		};
 		w.view.mouseDownAction_(updateFunction);
 		w.view.mouseMoveAction_(updateFunction);
+		w.view.keyDownAction_({
+			|doc, char, mod, unicode, keycode, key|
+			if(keycode == 123, { // L
+  				points[lastMovedPoint][0] = points[lastMovedPoint][0] - (1/this.getWidth());
+  			});
+  			if(keycode == 124, { // R
+  				points[lastMovedPoint][0] = points[lastMovedPoint][0] +  (1/this.getWidth());
+  			});
+  			if(keycode == 126, { // U
+  				points[lastMovedPoint][1] = points[lastMovedPoint][1] - (1/this.getHeight());
+  			});
+  			if(keycode == 125, { // D
+  				points[lastMovedPoint][1] = points[lastMovedPoint][1] + (1/this.getHeight());
+  			});
+			if((keycode == 123).or(keycode==124).or(keycode==125).or(keycode==126), {
+				points = points.max(0).min(1);
+				w.refresh
+			});
+			if((unicode == 48).or(unicode == 49).or(unicode==50), {
+				w.close;
+				this.mappingGui(unicode-48);
+			})
+		});
 	}
 	getWidth{
 		^size[0]
