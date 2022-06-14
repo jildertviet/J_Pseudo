@@ -155,7 +155,7 @@
 				MIDIdef.noteOn(\inflightshopping, {|val, num| "Shopping".postln; num.postln; this.setBus(0, 1);}, 19, chan: 14);
 			}
 			],
-			["Stars 2", {
+			["Stars2", {
 				var controls = ~forNextStarScene;
 				scenesDict[\Stars][1].value(); // Execute Stars default
 				controls[0].value_(2).valueAction = 2; // Height
@@ -392,7 +392,7 @@
 				this.setBus(1,0); // Percentage
 				this.setBus(0,0); // Hover
 			}],
-			["Countdown 2",{
+			["Countdown2",{
 				this.setScene(3, -1);
 				this.setBus(0, 5);
 				counter.value_(5);

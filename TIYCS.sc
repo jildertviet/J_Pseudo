@@ -239,7 +239,6 @@ TIYCS{
 		points = mappingPoints[screenID];
 		w.onClose_({mappingPoints[screenID] = points});
 		w.drawFunc = { |v|
-			points.postln;
 			Pen.fillColor = Color.blue;
 			Pen.strokeColor = Color.red;
 			points.do{
@@ -272,7 +271,7 @@ TIYCS{
 			};
 			lastMovedPoint = index;
 			// Update points
-			this.setTexCoord(screenID, index, (x * this.getWidth()).postln, y * this.getHeight());
+			this.setTexCoord(screenID, index, (x * this.getWidth()), y * this.getHeight());
 			points[index] = [x,y];
 			w.refresh;
 		};
