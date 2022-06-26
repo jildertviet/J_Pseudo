@@ -218,9 +218,10 @@ TIYCS{
 	closeChildWindows{
 		childWindows.do{|w|w.close};
 	}
-	allFullscreen{
+	fullscreen{
 		|value=1|
-		screens.do{|s| s.sendMsg("/eventById", 5, value);};
+		// screens.do{|s| s.sendMsg("/eventById", 5, value);};
+		screens[0].sendMsg("/eventById", 5, value);
 	}
 	setTexCoord{
 		|screenID=0, id=0, x=0, y=0|
@@ -306,5 +307,9 @@ TIYCS{
 	}
 	getHeight{
 		^size[1]
+	}
+	setScreenOrder{
+		|first=0, second=1,third=2|
+		screens[0].sendMsg("/eventById", 6,first, second, third);
 	}
 }

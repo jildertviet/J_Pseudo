@@ -398,6 +398,36 @@
 				counter.value_(5);
 				counter.action_({|e|this.setBus(0, e.value)}).focus;
 			}],
+			["Starsfinal",{
+				this.setScene(21);
+				{
+					10.wait;
+					var num = 30 * 90;
+					t.makeRoutine(num, { // X
+						|i|
+						var value = i / num;
+						value = value.pow(2);
+						t.setBus(0, value.linlin(0, 1, -5, 0));
+					});
+					t.makeRoutine(num, { // Y
+						|i|
+						var value = i / num;
+						t.setBus(1, value.linlin(0, 1, 0.5, 0));
+					});
+					t.makeRoutine(num, { // Radius
+						|i|
+						var value = i / num;
+						value = value.pow(50.0);
+						t.setBus(2, value.linlin(0, 1, 0.01, 4.5));
+					});
+					t.makeRoutine(num, { // Noise amp
+						|i|
+						var value = i / num;
+						value = value.pow(4);
+						t.setBus(3, value.linlin(0, 1, 0.01, 0.08));
+					});
+				}.fork;
+			}],
 			["Party", {
 				var colors = ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"]; // https://coolors.co/palettes/popular/rainbow (export, code, array)
 				colors = colors.collect({|c| Color.fromHexString(c)});
@@ -436,9 +466,9 @@
 			["QandA", {
 				// All Jonisks to low freq noise?
 				var options = (0..24);
-				var picked = (0!6);
-				6.do{|e,i| picked[i] = options.removeAt(options.size.rand)};
-				picked = picked.sort;
+				var picked = (0!9);
+				9.do{|e,i| picked[i] = options.removeAt(options.size.rand)};
+				// picked = picked.sort;
 				this.setScene(20);
 
 				if(~j != nil, {
@@ -460,9 +490,8 @@
 					});
 				});
 				counter.focus();
-				Color
 				// this.setScene(16,[0,2]);
-			}];
+			}]
 		];
 		t = List();
 		scenes.do{|e| t.add(e[0].asSymbol); t.add(e)};

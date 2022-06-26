@@ -38,6 +38,7 @@ JoniskMain{
 		this.iniTestPattern();
 		this.initMIDI();
 		this.initGuiDict();
+		sequence = (0..(jonisks.size-1));
 // });
 	}
 	readConfig{
