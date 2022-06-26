@@ -291,7 +291,7 @@
 					e.value.postln;
 					switch(e.value.asInteger,
 						0, { // Calling
-							this.setBus(0, 0); // All waveform black
+							this.setBus(0, 0); // All: waveform black
 							this.setBus(1, 255, 1); // Center to incoming call icon
 							this.setBus(1, 0, [0,2]); // Others not
 							this.setBus(2, 0); // During call to 0
@@ -301,7 +301,7 @@
 						},
 						1, { // During call
 							this.setBus(2, 255, 1); // During call icon
-							this.setBus(0, 150); // All waveform black
+							this.setBus(0, 255); // All: waveform full white
 							this.setBus(1, 0, 1); // Center to incoming call icon OFF
 							this.setBus(3, 255, 0); // Tel icon
 							if(Server.local.serverRunning, {updateWaveformT = updateWaveformT.fork}, {"Server not booted!".error});
@@ -398,6 +398,24 @@
 				counter.value_(5);
 				counter.action_({|e|this.setBus(0, e.value)}).focus;
 			}],
+			["Party", {
+				var colors = ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"]; // https://coolors.co/palettes/popular/rainbow (export, code, array)
+				colors = colors.collect({|c| Color.fromHexString(c)});
+				if(~j != nil, {
+					~j.jonisks.do{|j| j.setColor((colors.choose.toJV)[3] = 30)}; // R G B and W is minimal
+					~j.slidersDict[\brightness].valueAction = 0.55;
+					~j.slidersDict[\brightnessAdd].valueAction = 0.0;
+					~j.slidersDict[\asr].do{|e, i| e.valueAction = [0.1, 0.5, 3.0].at(i)};
+				});
+				MIDIdef(\partyNote, {
+					|val, num|
+					2.do{~j.jonisks.choose.trigger();}; // Trigger 2 Jonisks at once
+					if(10.rand == 3, {~j.jonisks.do{|j| j.setColor((colors.choose.toJV)[3] = 30)};}); // Random colors
+				}, chan: 14);
+				onSwitch = {
+					MIDIdef(\partyNote).free;
+				};
+			}],
 			["BLACKOUT", {
 				// this.blackFrame();
 				MIDIdef.noteOn(\arp).free;
@@ -414,7 +432,37 @@
 					5.wait;
 					this.valyueById(2, 255);
 				}.fork;
-			}]
+			}],
+			["QandA", {
+				// All Jonisks to low freq noise?
+				var options = (0..24);
+				var picked = (0!6);
+				6.do{|e,i| picked[i] = options.removeAt(options.size.rand)};
+				picked = picked.sort;
+				this.setScene(20);
+
+				if(~j != nil, {
+					~j.jonisks.synth.set(\noiseMul, 0.4);
+					~j.setBrightnessAdd(0.05);
+					~j.setBrightness(0.4);
+				});
+				counter.action_({
+					|e|
+					if(picked.size != 0, {
+						var toLightUp = picked.removeAt(0);
+						toLightUp.postln;
+						if(~j != nil, {
+							~j.setBrightnessAdd(0.05);
+							~j.jonisks[toLightUp].setBrightnessAdd(1.0);
+						});
+					}, {
+						"Restart QandA scene".postln;
+					});
+				});
+				counter.focus();
+				Color
+				// this.setScene(16,[0,2]);
+			}];
 		];
 		t = List();
 		scenes.do{|e| t.add(e[0].asSymbol); t.add(e)};

@@ -15,7 +15,7 @@
 		this.gui;
 		this.valyueById(2, 255); // Brightness full
 		automationWindow.front;
-		automationCounter = NumberBox(automationWindow).step_(1).action_({
+		automationCounter = NumberBox(automationWindow).step_(1).value_(-1).action_({
 			|e|
 			var value = e.value.asInteger;
 			switch(value,
@@ -165,20 +165,21 @@
 					this.loadScene(\Einde);
 				}
 					);
-			if((value > 11).and(value < 27), { // 12 -
+			if((value > 11).and(value < 27), { // 12 - 26: Counter opstijgen
 				var index = value - 12;
 				var count = (0..14).reverse[index];
 				counter.valueAction_(count);
 			});
-			if((value > 49).and(value < (49+6)), { // 49 - 54
+			if((value > 49).and(value < (49+6)), { // 49 - 54: Counter opstijgen 2e keer
 				var index = value - 50;
 				var count = (0..4).reverse[index];
 				counter.valueAction_(count);
 			});
-			});
-	}
+			automationWindow.front();
+			}); // Action function
+	} // Automate function (TIYCS::)
 }
 
 // s.options.numInputBusChannels_(0);
-t = TIYCS.new().automate
+// t = TIYCS.new().automate
 // t.getWindowByName("TIYCS - Bingo").view.children[4].valueAction_(1)
