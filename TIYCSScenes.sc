@@ -4,6 +4,12 @@
 		scenes = scenes ++ [
 			["None", {
 				this.setScene(16);
+				~j.jonisks.do{|j|
+					var c = [0,0,0,255]; // White
+					j.synth.set(\rgbw, c/255); // Scaled to 1
+					j.setColor(c);
+					j.setBrightness(0.35);
+				};
 			}],
 			["Test", {
 				this.setScene(17);
@@ -20,13 +26,13 @@
 						bus = Bus.alloc(\control, Server.default);
 						// rotateSynth = {Out.kr(bus, SinOsc.kr(1/4).pow(0.1) * Line.kr(0, 1, 1))}.play;
 						rotateSynth.free; rotateSynth = {Out.kr(bus, VarLag.kr(LFPulse.kr(1/6, 0.75), 1))}.play;
-						routines.add(this.makeRoutine(inf, {
+						this.makeRoutine(inf, {
 							|i|
 							bus.get({
 								|val|
 								this.setBus(1, val.linlin(0, 1, 0, 180)); // Rotate
 							});
-						}));
+						});
 					}, {
 						rotateSynth.free; bus.free; this.setBus(1, 0);
 						routines.pop.stop;
@@ -37,11 +43,12 @@
 				window.view.palette_(QPalette.dark);
 				window.view.decorator_(FlowLayout(window.view.bounds));
 				this.setScene(0, -1);
-				routines.add(this.makeRoutine(numFrames, {
+				this.makeRoutine(numFrames, {
 					|i|
 					this.setBus(0, linlin(i, 0, numFrames, 0, 2)); // Movement-intensity
-				}));
+				});
 				window.view.onClose = { rotateSynth.free; bus.free; this.setBus(1, 0); this.clearRoutines(); };
+				onSwitch = {window.close};
 			}],
 			["Instructions", {
 				var prevVal = 0;
@@ -52,10 +59,10 @@
 					var dir = 1;
 					var startPoint = prevVal;
 					if(e.value < prevVal, {dir = -1});
-					routines.add(this.makeRoutine(16, {
+					this.makeRoutine(16, {
 						|i|
 						this.setBus(0, startPoint + ((i/15)*dir));
-					}));
+					});
 					prevVal = e.value;
 				}).focus;
 				this.clearRoutines();
@@ -93,28 +100,28 @@
 				startRoute = Button.new(window, buttonSize).string_("Start route").action_({
 					var numFrames = 300 * frameRate; // 300 sec
 					this.clearRoutines();
-					this.routines.add(this.makeRoutine(numFrames, {
+					this.makeRoutine(numFrames, {
 						|i|
 						this.setBus(9, i.linlin(0, numFrames, 0, 1));
-					}));
+					});
 				});
 				moveJonisk = Button.new(window, buttonSize).string_("Move Jonisk").action_({
 					var numFrames = 300 * frameRate; // 300 sec
 					// this.clearRoutines();
-					this.routines.add(this.makeRoutine(numFrames, {
+					this.makeRoutine(numFrames, {
 						|i|
 						// this.setBus(9, i.linlin(0, numFrames, 0, 1));
 						{joniskPos.valueAction = i.linlin(0, numFrames, 0, 200);}.defer;
-					}));
+					});
 				}).bounds.width_(100);
 				emptyBenzine = Button.new(window, buttonSize).string_("Empty benzine").action_({
 					var numFrames = 50 * frameRate; // 60sec
 					// this.clearRoutines();
-					this.routines.add(this.makeRoutine(numFrames, {
+					this.makeRoutine(numFrames, {
 						|i|
 						this.setBus(10, i.linlin(0, numFrames, 150, 0));
 						// {joniskPos.valueAction = i.linlin(0, numFrames, 0, 200);}.defer;
-					}));
+					});
 				});
 				[startRoute, moveJonisk, emptyBenzine].do{|e| e.bounds().resizeBy(100, 0)};
 				this.setBus(10, 150);
@@ -201,10 +208,10 @@
 				redFill = EZSlider.new(window, label:"redFill", controlSpec: ControlSpec(0, 255, 'lin')).value_(255).action_({|e|this.setBus(5, e.value)}).valueAction = 255;
 				fillButton = Button.new(window).string_("Fill").action_({
 					var numFrames = (frameRate * 15); // 30 sec
-					routines.add(this.makeRoutine(numFrames, {
+					this.makeRoutine(numFrames, {
 						|i|
 						this.setBus(10, linlin(i, 0, numFrames, 0, 180)); // Movement-intensity
-					}));
+					});
 				});
 				noteOn.add(MIDIdef.noteOn(\fillTank, {|val, num| "Fill tank".postln; {fillButton.valueAction = 1;}.defer }, 25, chan: 14));
 				MIDIdef.noteOn(\switchScene, {|val, num| "Switch to return scene".postln; {scenesDict[\ReturnToShip][1].value();}.defer; MIDIdef(\switchScene).clear; /* Return to ship */ }, 26, chan: 14);
@@ -339,7 +346,6 @@
 				window.layout = HLayout(
 					[Button().states_([["Roll"],["Stop"]]).action_({|e| if(e.value == 1, {
 						var routine = this.makeRoutine(inf, {|i| if( i % (frameRate*0.5) == 0, {this.setBus(1, [0, 1, 0.5].choose)})}); // Roll (set rotational gravity intensity)
-						routines.add(routine);
 					}, {
 						this.setBus(1, 1); // Why 1? ;
 						this.clearRoutines(); // Stop
@@ -386,7 +392,6 @@
 					routine = this.makeRoutine(numFrames, {|i|
 						this.setBus(1, linlin(i, 0, numFrames, 0, 101)); // %
 					}); // Roll
-					routines.add(routine);
 				}.fork;
 				this.setScene(15, -1);
 				this.setBus(1,0); // Percentage
@@ -399,49 +404,72 @@
 				counter.action_({|e|this.setBus(0, e.value)}).focus;
 			}],
 			["Starsfinal",{
+				var bFireBallStarted = false;
 				this.setScene(21);
-				{
-					10.wait;
-					var num = 30 * 90;
-					t.makeRoutine(num, { // X
-						|i|
-						var value = i / num;
-						value = value.pow(2);
-						t.setBus(0, value.linlin(0, 1, -5, 0));
+				this.setBus(10, 0);
+				this.setBus(11, 0);
+				this.setBus(12, 0);
+				this.setBus(13, 0);
+				this.valyueById(2, 255);
+				"Final stars".postln;
+				MIDIdef.noteOn(\fireball, {
+					|val, num|
+					"Fireball".postln;
+					num.postln;
+					if(bFireBallStarted == false, {
+						"Start fireball".postln;
+						bFireBallStarted = true;
+						{
+							// var num = 30 * 99.758;
+							var num = 30 * 98;
+							this.setBus(10, -3.0);
+							// 10.wait;
+							this.clearRoutines;
+							this.makeRoutine(num, { // X
+								|i|
+								var x, y, r, noiseAmp;
+								var value = i / num;
+								//x = value.pow(2);
+								//this.setBus(0, x.linlin(0, 1, -5.0, 0.0));
+								if(i > (num * 0.5), {
+									var temp = (i - (num*0.5)) / (num*0.5);
+									x = temp.pow(2);
+									this.setBus(10, x.linlin(0, 1, -3.0, 0.0));
+								});
+								this.setBus(11, value.linlin(0, 1, -0.5, 0));
+								r = value.pow(20.0); // Was 8.0
+								this.setBus(12, r.linlin(0, 1, 0.001, 4.5).max(0.8));
+								noiseAmp = value.pow(2);
+								this.setBus(13, noiseAmp.linlin(0, 1, 0.01, 0.08));
+								if(i == (num.asInteger-1), {
+									"Set to black".postln;
+									this.valyueById(2, 0); // Brightness 0
+									this.loadScene(\Einde);
+								});
+							});
+						}.fork;
 					});
-					t.makeRoutine(num, { // Y
-						|i|
-						var value = i / num;
-						t.setBus(1, value.linlin(0, 1, 0.5, 0));
-					});
-					t.makeRoutine(num, { // Radius
-						|i|
-						var value = i / num;
-						value = value.pow(50.0);
-						t.setBus(2, value.linlin(0, 1, 0.01, 4.5));
-					});
-					t.makeRoutine(num, { // Noise amp
-						|i|
-						var value = i / num;
-						value = value.pow(4);
-						t.setBus(3, value.linlin(0, 1, 0.01, 0.08));
-					});
-				}.fork;
+				}, 96, chan: 14);
 			}],
 			["Party", {
 				var colors = ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"]; // https://coolors.co/palettes/popular/rainbow (export, code, array)
 				colors = colors.collect({|c| Color.fromHexString(c)});
 				if(~j != nil, {
-					~j.jonisks.do{|j| j.setColor((colors.choose.toJV)[3] = 30)}; // R G B and W is minimal
+					~j.jonisks.do{|j|
+						var color = colors.choose;
+						j.synth.set(\rgbw, [color.red, color.green, color.blue, 30/255]);
+						j.setColor((color.toJV)[3] = 30);
+					}; // R G B and W is minimal
 					~j.slidersDict[\brightness].valueAction = 0.55;
 					~j.slidersDict[\brightnessAdd].valueAction = 0.0;
 					~j.slidersDict[\asr].do{|e, i| e.valueAction = [0.1, 0.5, 3.0].at(i)};
 				});
-				MIDIdef(\partyNote, {
+				MIDIdef.noteOn(\partyNote, {
 					|val, num|
+					// "partynote".postln;
 					2.do{~j.jonisks.choose.trigger();}; // Trigger 2 Jonisks at once
 					if(10.rand == 3, {~j.jonisks.do{|j| j.setColor((colors.choose.toJV)[3] = 30)};}); // Random colors
-				}, chan: 14);
+				}, 97, chan: 14);
 				onSwitch = {
 					MIDIdef(\partyNote).free;
 				};
@@ -459,7 +487,7 @@
 				this.valyueById(2, 0); // Black
 				this.setScene(18);
 				{
-					5.wait;
+					4.wait;
 					this.valyueById(2, 255);
 				}.fork;
 			}],
@@ -472,9 +500,11 @@
 				this.setScene(20);
 
 				if(~j != nil, {
-					~j.jonisks.synth.set(\noiseMul, 0.4);
-					~j.setBrightnessAdd(0.05);
-					~j.setBrightness(0.4);
+					~j.jonisks.do{|j| j.synth.set(\noiseMul, 0.5)};
+					// ~j.setBrightnessAdd(0.35);
+					~j.slidersDict[\brightnessAdd].valueAction = 0.35;
+					~j.slidersDict[\brightness].valueAction = 0.6;
+					// ~j.setBrightness(0.6);
 				});
 				counter.action_({
 					|e|
@@ -482,7 +512,8 @@
 						var toLightUp = picked.removeAt(0);
 						toLightUp.postln;
 						if(~j != nil, {
-							~j.setBrightnessAdd(0.05);
+							~j.slidersDict[\brightnessAdd].valueAction = 0.35;
+							// ~j.setBrightnessAdd(0.05);
 							~j.jonisks[toLightUp].setBrightnessAdd(1.0);
 						});
 					}, {
@@ -490,6 +521,9 @@
 					});
 				});
 				counter.focus();
+				onSwitch = {
+					~j.jonisks.do{|j| j.synth.set(\noiseMul, 0.0)};
+				};
 				// this.setScene(16,[0,2]);
 			}]
 		];

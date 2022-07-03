@@ -8,6 +8,7 @@
 		var windowName = if(id != nil, {"Jonisk " ++ id.asString}, {"Jonisk x"});
 		var dict = Dictionary();
 		window = Window(windowName).front.setInnerExtent(400, 600);
+		window.bounds_(window.bounds.moveTo(0,0));
 		window.view.palette_(QPalette.dark);
 		window.view.decorator_(FlowLayout(window.view.bounds));
 		window.view.decorator.left = 25;

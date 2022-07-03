@@ -13,6 +13,8 @@ TIYCS{
 	var <> childWindows;
 	var <> bShiftPressed = false;
 	var mappingPoints;
+	var <> automationWindow;
+	var <> cues;
 	*new{
 		|ip="127.0.0.1"|
 		^super.new.init(ip);
@@ -53,6 +55,7 @@ TIYCS{
 				frameDur.wait;
 			}
 		}.fork;
+		routines.add(routine);
 		^routine;
 	}
 	clearRoutines{

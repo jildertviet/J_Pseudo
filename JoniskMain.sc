@@ -232,9 +232,8 @@ JoniskMain{
 		updateRoutine.stop;
 	}
 	gui{
-		window = Window("TIYCS - Jonisk control").front;
-		window.bounds_(window.bounds.width_(600));
-		window.bounds_(window.bounds.width_(600));
+		var globalButton;
+		window = Window("TIYCS - Jonisk control", Rect(0, 0, 600, 2000)).front;
 		liveButton = Button().string_("Idle").action_({
 			|e|
 			e.states_([["GO LIVE", Color.white, Color.new255(49,222,75)], ["STOP", Color.white, Color.new255(255,65,54)]]).action_({
@@ -259,6 +258,7 @@ JoniskMain{
 					["", Color.grey, Color.grey],
 					["", Color.grey, Color.green],
 		])});
+		globalButton = Button().string_("Global").action_({this.openGlobalGui});
 		window.layout = VLayout(
 			HLayout(
 				[liveButton],
@@ -269,7 +269,7 @@ JoniskMain{
 					frameDur = (1/menu.item);
 					frameRate = menu.item;
 				}).value_(frameRateIndex)],
-				Button().string_("Global").action_({this.openGlobalGui}),
+				globalButton,
 				Button().string_("Config").action_({this.configLights}),
 				Button().string_("Test pattern").action_({this.toggleTestPatttern()}),
 /*				window.view.bounds.width * 0.25,*/
@@ -287,6 +287,7 @@ JoniskMain{
 				[states[i], s: 1]
 			)}));
 		);
+		globalButton.valueAction_(1);
 	}
 	configLights{
 		|mode=1|
