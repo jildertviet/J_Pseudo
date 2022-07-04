@@ -12,7 +12,7 @@ TIYCS{
 	var <> blackToggle = 0;
 	var <> childWindows;
 	var <> bShiftPressed = false;
-	var mappingPoints;
+	var <> mappingPoints;
 	var <> automationWindow;
 	var <> cues;
 	*new{
@@ -45,6 +45,7 @@ TIYCS{
 		this.initScenes();
 		childWindows = List.new();
 		mappingPoints = [[0,0],[1,0],[1,1],[0,1]]!3;
+		this.readMappingFile();
 	}
 	makeRoutine{
 		|num=1, func|
@@ -302,8 +303,44 @@ TIYCS{
 			if((unicode == 48).or(unicode == 49).or(unicode==50), {
 				w.close;
 				this.mappingGui(unicode-48);
-			})
+			});
+			if(unicode == 115, {
+				var f;
+				f = File(("~/TIYCSMapping_"++screenID++".txt").standardizePath,"w");
+				points.do{
+					|p|
+					// p.postln;
+					f.write(p[0].asString);
+					f.write(",");
+					f.write(p[1].asString);
+					f.write(",");
+				};
+				f.write("\n");
+				f.close;
+				"Save mapping".postln;
+			});
 		});
+	}
+	readMappingFile{
+		"Read mapping file of 3 screens".postln;
+		3.do{
+			|i|
+			var g = File(("~/TIYCSMapping_"++i++".txt").standardizePath,"r");
+			var a = g.readAllString.split($,).asFloat;
+			("Read: " ++ ("~/TIYCSMapping_"++i++".txt").standardizePath).postln;
+			if(a.size() > 7, {
+				var points = [[a[0], a[1]],[a[2], a[3]],[a[4], a[5]],[a[6], a[7]]];
+				mappingPoints[i] = points;
+				// points.postln;
+			});
+			mappingPoints[i].do{
+				|p, index|
+				this.setTexCoord(i, index, (p[0] * this.getWidth()), p[1] * this.getHeight());
+			}
+			// mappingPoints[0].postln;
+			// mappingPoints[1].postln;
+			// mappingPoints[2].postln;
+		}
 	}
 	getWidth{
 		^size[0]

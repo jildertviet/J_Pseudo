@@ -485,6 +485,8 @@
 			}],
 			["Einde", {
 				this.valyueById(2, 0); // Black
+				"/usr/local/bin/brightness 0.0".unixCmd;
+				{10.wait; "/usr/local/bin/brightness 1.0".unixCmd;}.fork;
 				this.setScene(18);
 				{
 					4.wait;
