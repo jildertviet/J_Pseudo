@@ -404,6 +404,7 @@
 				counter.action_({|e|this.setBus(0, e.value)}).focus;
 			}],
 			["Starsfinal",{
+				var oscFunc;
 				var bFireBallStarted = false;
 				this.setScene(21);
 				this.setBus(10, 0);
@@ -425,23 +426,43 @@
 							this.setBus(10, -3.0);
 							// 10.wait;
 							this.clearRoutines;
+							{
+								var dur = 98;
+								var x;
+								var noise = LFDNoise3.ar(Line.kr(0.1, 10, dur)!2).pow(0.25);
+								var xy = LPF.ar(noise, 1);
+								var line = Line.kr(0, 1, dur);
+								var r = line.pow(20.0).linlin(0, 1, 0.001, 4.5).max(Line.kr(0, 0.8, 10));
+								var noiseAmp = line.pow(2).linlin(0, 1, 0.01, 0.05) + 0.02;
+								var speed = (line.pow(2)).linlin(0, 1, 1.0, 10.0);
+								xy = xy * Line.kr(1, 0, dur);
+								SendReply.kr(Impulse.kr(30), '/starsFinal', xy ++ r ++ noiseAmp ++ speed);
+								Line.kr(0, 1, dur, doneAction: 2);
+							}.play;
+							oscFunc = OSCdef(\receiveStarsFinal, {|msg|
+								this.setBus(10, msg[3]); // X, y, r, noiseAmp, speed
+								this.setBus(11, msg[4]);
+								this.setBus(12, msg[5]);
+								this.setBus(13, msg[6]);
+								this.setBus(14, msg[7]);
+							}, '/starsFinal');
 							this.makeRoutine(num, { // X
 								|i|
-								var x, y, r, noiseAmp;
-								var value = i / num;
+								// var x, y, r, noiseAmp;
+								// var value = i / num;
 								//x = value.pow(2);
 								//this.setBus(0, x.linlin(0, 1, -5.0, 0.0));
-								if(i > (num * 0.5), {
-									var temp = (i - (num*0.5)) / (num*0.5);
-									x = temp.pow(2);
-									this.setBus(10, x.linlin(0, 1, -3.0, 0.0));
-								});
-								this.setBus(11, value.linlin(0, 1, -0.5, 0));
-								r = value.pow(20.0); // Was 8.0
-								this.setBus(12, r.linlin(0, 1, 0.001, 4.5).max(0.8));
-								noiseAmp = value.pow(2);
-								this.setBus(13, noiseAmp.linlin(0, 1, 0.01, 0.08));
-								this.setBus(14, (value.pow(2)).linlin(0, 1, 1.0, 10.0)); // Speed
+								// if(i > (num * 0.5), {
+									// var temp = (i - (num*0.5)) / (num*0.5);
+									// x = temp.pow(2);
+									// this.setBus(10, x.linlin(0, 1, -3.0, 0.0));
+								// });
+								// this.setBus(11, value.linlin(0, 1, -0.5, 0));
+								// r = value.pow(20.0); // Was 8.0
+								// this.setBus(12, r.linlin(0, 1, 0.001, 4.5).max(0.8));
+								// noiseAmp = value.pow(2);
+								// this.setBus(13, noiseAmp.linlin(0, 1, 0.01, 0.08));
+								// this.setBus(14, (value.pow(2)).linlin(0, 1, 1.0, 10.0)); // Speed
 								if(i == (num.asInteger-1), {
 									"Set to black".postln;
 									this.valyueById(2, 0); // Brightness 0

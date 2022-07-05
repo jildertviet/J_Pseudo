@@ -22,6 +22,14 @@
 		textBoxes[1] = StaticText(automationWindow, Rect(m + 50 + m, h + m, 150, h));
 		textBoxes[2] = StaticText(automationWindow, Rect(m + 50 + m, (h + m) * 2, 150, h)).stringColor_(Color.grey);
 		textBoxes[3] = StaticText(automationWindow, Rect(m + 50 + m, (h + m) * 3, 150, h)).stringColor_(Color.grey);
+		Button(automationWindow, Rect(300 - 50 - m, m, 50, 50)).states_([
+            ["↑", Color.grey, Color.white],
+        ]).action_({
+			cueCounter.decrement(1);
+		});
+		Button(automationWindow, Rect(300 - 50 - m, m + 50 + m, 50, 50)).string_("↓").action_({
+			cueCounter.increment(1);
+		});
 
 		this.gui;
 
