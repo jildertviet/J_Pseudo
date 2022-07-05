@@ -28,7 +28,7 @@ Jonisk{
 		color.alpha = 0;
 		id = index;
 		bus = Bus.alloc(\control, Server.default, 4);
-		synth = Synth(\jonisk, [out: bus]);
+		synth = Synth(\jonisk, [out: bus, curve: 0]);
 	}
 	*loadSynthDef{ // This should write a SynthDef file
 		SynthDef(\jonisk, {
