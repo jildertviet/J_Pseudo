@@ -178,7 +178,7 @@
 				if(~j != nil, {
 					~j.slidersDict[\rgbw].do{|e, i| e.valueAction = [255,0,0,0].at(i)}; // Slider at range 0-255
 					~j.slidersDict[\asr].do{|e, i| e.valueAction = [0, 0.5, 0].at(i)};
-					~j.slidersDict[\brightness].valueAction = 0.35;
+					~j.slidersDict[\brightness].valueAction = 0.45;
 					~j.slidersDict[\brightnessAdd].valueAction = 0;
 				});
 
@@ -370,7 +370,8 @@
 					})})],
 				);
 				if(~j != nil, {
-					~j.slidersDict[\brightness].valueAction = 0.35;
+					~j.slidersDict[\brightness].valueAction = 0.5;
+					~j.slidersDict[\brightnessAdd].valueAction = 1.0;
 					~j.jonisks.do{|j|
 						var c = [[0,0,0,255],[0,0,255,0]].choose;
 						j.synth.set(\rgbw, c/255); // Scaled to 1
@@ -386,6 +387,14 @@
 			}],
 			["Autopilot", {
 				var numFrames = 10 * frameRate;
+				if(~j != nil, {
+					~j.slidersDict[\brightness].valueAction = 0.35;
+					~j.jonisks.do{|j|
+						var c = [0,0,0,255];
+						j.synth.set(\rgbw, c/255); // Scaled to 1
+						j.setColor(c);
+					};
+				});
 				{
 					var routine;
 					10.wait;
@@ -398,6 +407,14 @@
 				this.setBus(0,0); // Hover
 			}],
 			["Countdown2",{
+				if(~j != nil, {
+					this.makeRoutine(30 * 10, {
+						|i|
+						{
+							~j.slidersDict[\brightnessAdd].valueAction = i.linlin(0, 30*10, 1.0, 0);
+						}.fork(AppClock);
+					});
+				});
 				this.setScene(3, -1);
 				this.setBus(0, 5);
 				counter.value_(5);
