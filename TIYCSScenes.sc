@@ -441,6 +441,7 @@
 								this.setBus(12, r.linlin(0, 1, 0.001, 4.5).max(0.8));
 								noiseAmp = value.pow(2);
 								this.setBus(13, noiseAmp.linlin(0, 1, 0.01, 0.08));
+								this.setBus(14, (value.pow(2)).linlin(0, 1, 1.0, 10.0)); // Speed
 								if(i == (num.asInteger-1), {
 									"Set to black".postln;
 									this.valyueById(2, 0); // Brightness 0

@@ -114,7 +114,7 @@ TIYCS{
 	gui{
 		var numColumns = 5;
 		var numRows = ceil(scenes.size / numColumns);
-		var window = Window("TIYCS - Scenes").front;
+		var window = Window("TIYCS - Scenes", Rect(950, 200, 400, 300)).front;
 		var a = { { Button(window) } ! numColumns } ! numRows;
 		var buttonMatrix = View().layout_(VLayout(*a.collect { |x| HLayout(*x) }));
 		var brightnessSlider;
