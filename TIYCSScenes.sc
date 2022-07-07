@@ -428,6 +428,7 @@
 				this.setBus(11, 0);
 				this.setBus(12, 0);
 				this.setBus(13, 0);
+				this.setBus(14, 1);
 				this.valyueById(2, 255);
 				"Final stars".postln;
 				MIDIdef.noteOn(\fireball, {
@@ -446,12 +447,12 @@
 							{
 								var dur = 98;
 								var x;
-								var noise = LFDNoise3.ar(Line.kr(0.1, 10, dur)!2).pow(0.25);
+								var noise = LFDNoise3.ar(Line.kr(0.1, 10, dur)!2).pow(0.25) * 0.5;
 								var xy = LPF.ar(noise, 1);
 								var line = Line.kr(0, 1, dur);
 								var r = line.pow(20.0).linlin(0, 1, 0.001, 4.5).max(Line.kr(0, 0.8, 10));
 								var noiseAmp = line.pow(2).linlin(0, 1, 0.01, 0.05) + 0.02;
-								var speed = (line.pow(2)).linlin(0, 1, 1.0, 10.0);
+								var speed = (line.pow(2)).linlin(0, 1, 1.0, 20.0);
 								xy = xy * Line.kr(1, 0, dur);
 								SendReply.kr(Impulse.kr(30), '/starsFinal', xy ++ r ++ noiseAmp ++ speed);
 								Line.kr(0, 1, dur, doneAction: 2);

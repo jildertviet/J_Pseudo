@@ -233,7 +233,7 @@ JoniskMain{
 	}
 	gui{
 		var globalButton;
-		window = Window("TIYCS - Jonisk control", Rect(0, 0, 600, 2000)).front;
+		window = Window("TIYCS - Jonisk control", Rect(0, 0, 600, 2000), scroll: true).front;
 		liveButton = Button().string_("Idle").action_({
 			|e|
 			e.states_([["GO LIVE", Color.white, Color.new255(49,222,75)], ["STOP", Color.white, Color.new255(255,65,54)]]).action_({

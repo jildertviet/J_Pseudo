@@ -16,20 +16,20 @@
 		var automationCounter;
 		var cueCounter;
 		var textBoxes = 0!4;
-		automationWindow = Window("Automate", Rect(2000, 800, 300, 150)).front;
+		automationWindow = Window("Automate ↑", Rect(2000, 800, 300, 150)).front;
 		cueCounter = NumberBox(automationWindow, Rect(m, m + h, 50, h)).step_(1).value_(-1);
 		textBoxes[0] = StaticText(automationWindow, Rect(m + 50 + m, 0, 150, h)).stringColor_(Color.grey);
 		textBoxes[1] = StaticText(automationWindow, Rect(m + 50 + m, h + m, 150, h));
 		textBoxes[2] = StaticText(automationWindow, Rect(m + 50 + m, (h + m) * 2, 150, h)).stringColor_(Color.grey);
 		textBoxes[3] = StaticText(automationWindow, Rect(m + 50 + m, (h + m) * 3, 150, h)).stringColor_(Color.grey);
-		Button(automationWindow, Rect(300 - 50 - m, m, 50, 50)).states_([
+		/*Button(automationWindow, Rect(300 - 50 - m, m, 50, 50)).states_([
             ["↑", Color.grey, Color.white],
         ]).action_({
 			cueCounter.decrement(1);
 		});
 		Button(automationWindow, Rect(300 - 50 - m, m + 50 + m, 50, 50)).string_("↓").action_({
 			cueCounter.increment(1);
-		});
+		});*/
 
 		this.gui;
 
@@ -47,7 +47,7 @@
 			this.valyueById(2, 255);
 			this.clearRoutines();
 			this.loadScene(\Intro);
-			this.setScreenOrder(2, 1, 0);
+			// this.setScreenOrder(2, 1, 0);
 		}, "Intro"];
 		cues[2] = [{
 			var button;
@@ -279,6 +279,8 @@
 			textBoxes[1].string = cues[value][1];
 			textBoxes[2].string = cues[value+1][1];
 			textBoxes[3].string = cues[value+2][1];
+			automationWindow.visible = false;
+			automationWindow.visible = true;
 		}); // Action function
 		textBoxes[2].string = cues[0][1];
 		textBoxes[3].string = cues[1][1];

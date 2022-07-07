@@ -352,4 +352,10 @@ TIYCS{
 		|first=0, second=1,third=2|
 		screens[0].sendMsg("/eventById", 6,first, second, third);
 	}
+	welcomeTxt{
+		StaticText(Window("").setInnerExtent(400, 100).front, Rect(0, 0, 400, 60)).string_(
+			"1.) Beweeg muis @ Linux voor je begint (slaapstand).\n2.) Staat (Jonisk-)knop linksboven op STOP (en niet nog op Idle?)\n3.) Sluit dit scherm")
+		.onClose_({automationWindow.visible = false; automationWindow.visible = true});
+	}
 }
+
