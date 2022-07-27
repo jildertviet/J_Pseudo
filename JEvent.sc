@@ -230,16 +230,18 @@ JEvent {
 		this.basicGui();
 	}
 	mod {
-		|parameter="width", modulator=nil|
+		|parameter="width", modulator="{SinOsc.kr(1)}"|
 		if(modulator != nil, {
 			var paramId = ~v[0].getParamId(type, parameter); // "JEvent", "width" should lookup.
 			if(~of != nil, {
 				if(~of.serverRunning, {
 					if(paramId != nil, {
 						// Create Synth
-						var m = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, modulator.addToSynth])}.play(~of);
-						modulators.add(m);
-						"Modulator is now static!".error;
+						var bus = Bus.alloc(\control, ~of).set(100);
+						var sender;
+						modulator = modulator.play(~of, outbus: bus);
+						sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [1, 0, In.kr(bus)])}.play(~of);
+						modulators.add([sender, modulator, bus]);
 
 						// ("Creating modulator to event id " ++ id.asString ++ " to param ID: " ++ paramId.asString ++ " with modulator " ++ modulator).postln;
 					}, {
