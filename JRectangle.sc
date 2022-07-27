@@ -1,4 +1,7 @@
 JRectangle : JEvent{
+	setType{ // Override
+		type = "JRectangle";
+	}
 	createUnique {
 		this.sendMakeCmd("JRectangle");
 	}

@@ -9,8 +9,10 @@ JVisuals : JMIDI{
 	var <size = #[1280, 800];
 	var <w = 1280;
 	var <h = 800;
+	var <>frameRate = 60;
 	var <>guiWindow = nil;
 	var <>brightnessSlider = nil, <>alphaSlider=nil, <>maskBrightnessSlider=nil;
+	var <> mapValues;
 	*new{
 		|netAddr_|
 		^super.new.init(netAddr_)
@@ -24,6 +26,7 @@ JVisuals : JMIDI{
 		presets = Array.fill(5, {Array.newClear(64)});
 		"Initializing MIDI...".postln;
 		this.initMIDI();
+		this.initMapValues
 	}
 	setSize {
 		|si = #[1280,800]|

@@ -9,6 +9,8 @@ JEvent {
 	var <>bBundle = false;
 	var <>bundle;
 	var <>visualizerID = 0;
+	var <>type="JEvent";
+	var <>modulators;
 	*new{
 		|layer=2, visualizerID=0|
 		^super.new.init(layer, visualizerID)
@@ -51,6 +53,11 @@ JEvent {
 		// ("New event with id: " ++ id).postln;
 		this.uniqueInit();
 		bundle = List.new();
+		modulators = List.new();
+		this.setType();
+	}
+	setType{
+		type = "JEvent"
 	}
 	startBundle{
 		this.bBundle = true;
@@ -222,6 +229,27 @@ JEvent {
 	gui {
 		this.basicGui();
 	}
+	mod {
+		|parameter="width", modulator=nil|
+		if(modulator != nil, {
+			var paramId = ~v[0].getParamId(type, parameter); // "JEvent", "width" should lookup.
+			if(~of != nil, {
+				if(~of.serverRunning, {
+					if(paramId != nil, {
+						// Create Synth
+						"Modulator is now static!".error;
+						var m = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, SinOsc.kr(1).range(100, 200)])}.play(~of);
+						modulators.add(m);
+						// ("Creating modulator to event id " ++ id.asString ++ " to param ID: " ++ paramId.asString ++ " with modulator " ++ modulator).postln;
+					}, {
+						("Parameter " ++ parameter ++ " doesn't seem to be mappable").error;
+					});
+				}, {
+					"Remote server not running".error;
+				});
+			});
+		});
+	}
 }
 
 JEllipse : JEvent{
@@ -263,12 +291,6 @@ JShaderTest : JEvent{
 		this.setCustomArg(0, div[0]);
 		this.setCustomArg(1, div[1]);
 		this.doFunc(0);
-	}
-}
-
-JIFLogo : JEvent{
-	createUnique {
-		this.sendMakeCmd("JIFLogo");
 	}
 }
 

@@ -42,7 +42,7 @@
 				~j.slidersDict[\brightness].valueAction = 0.15;
 				~j.slidersDict[\brightnessAdd].valueAction = 1.0;
 			});
-		}, "Inloop"];
+		}, "Inloop: lichten checken (geluid 'deuren sluiten')"];
 		cues[1] = [{
 			this.valyueById(2, 255);
 			this.clearRoutines();
@@ -61,14 +61,14 @@
 		cues[3] = [ {
 			this.clearRoutines();
 			this.loadScene(\Instructions);
-		}, "Instructies"];
+		}, "Instructies (wachten op 'na: Jonisk')"];
 		cues[4] = [ {counter.valueAction = 1}, "Instr: snacks"];
 		cues[5] = [ {counter.valueAction = 2}, "Instr: bagage"];
 		cues[6] = [ {counter.valueAction = 3}, "Instr: mobiel"];
 		cues[7] = [ {counter.valueAction = 4}, "Instr: links"];
 		cues[8] = [ {counter.valueAction = 5}, "Instr: rechts"];
 		cues[9] = [ {counter.valueAction = 6}, "Instr: rechtop"];
-		cues[10] = [ {counter.valueAction = 7}, "Instr: nooduitgang"];
+		cues[10] = [ {counter.valueAction = 7}, "Instr: nooduitgang (niet te lang)"];
 		cues[11] = [ {counter.valueAction = 8}, "black"];
 		cues[12] = [ {this.loadScene(\Countdown)}, "countdown: 15"];
 		cues[13] = [ {counter.valueAction = 14 }, "14"];
@@ -121,7 +121,7 @@
 			m.valueAction_(1);
 			this.getWindowByName("TIYCS - Stars").view.children[6].valueAction_(1);
 			{
-				20.wait;
+				60.wait;
 				if(~j != nil, {
 					var num = 30 * 10;
 					this.makeRoutine(num, {
@@ -140,7 +140,7 @@
 		}, "commercials"];
 		cues[32] = [ {
 			this.loadScene(\Stars2);
-		}, "terug naar sterren"];
+		}, "terug naar space muziekje"];
 		cues[33] = [ {
 			this.loadScene(\QandA);
 		}, "Vraag en antwoord"];
@@ -157,7 +157,7 @@
 			this.getWindowByName("TIYCS - Stars").view.children[4].children[1].valueAction_(255);
 			this.getWindowByName("TIYCS - Stars").view.children[7].valueAction_(1); // Move
 			this.getWindowByName("TIYCS - Stars").view.children[8].valueAction_(1); // Empty tank
-		}, "terug naar vliegen"];
+		}, "(wait for it): terug naar space muziekje"];
 		cues[35] = [ {
 			this.loadScene(\Benzine);
 		}, "alarm: benzine"];
@@ -173,7 +173,7 @@
 				h = h * 2;
 				this.setBus(0, h); // Landing
 			});
-		}, "dalen"];
+		}, "(wait for 'start landing') Dalen.\nHelm op."];
 		cues[37] = [ {
 			this.clearRoutines();
 			"Captain incoming".postln;
@@ -186,15 +186,15 @@
 		}, "Opnemen"];
 		cues[39] = [ {
 			this.loadScene(\Bingo);
-		}, "Bingo"];
+		}, "'Woordje' Bingo: kaarten uitdelen"];
 		cues[40] = [ {
 			this.getWindowByName("TIYCS - Bingo").view.children[4].valueAction_(1);
 			"Start turning bg".postln;
-		}, "Roteren achtergrond"];
+		}, "Roteren achtergrond -> pennen uitdelen"];
 		cues[41] = [ {
 			this.getWindowByName("TIYCS - Bingo").view.children[0].valueAction_(1);
 			"Roll bingo wheel".postln;
-		}, "Bingo wiel rollen"];
+		}, "Wiel rollen (met geluid)"];
 		cues[42] = [ {
 			"First number".postln;
 			this.getWindowByName("TIYCS - Bingo").view.children[1].valueAction_(1);
@@ -235,11 +235,11 @@
 			"Starting autopilot".postln;
 			this.clearRoutines();
 			this.loadScene(\Autopilot);
-		}, "Gelukt! start automatische P"];
+		}, "Gelukt! start automatische P. WACHT"];
 		cues[53] = [ {
 			"Countdown 2".postln;
 			this.loadScene(\Countdown2);
-		}, "Countdown: 5"];
+		}, "Countdown: 5 'start aftellen'"];
 		cues[54] = [{
 			counter.valueAction_(4);
 		}, "4"];
@@ -259,7 +259,7 @@
 			this.clearRoutines();
 			// this.setScreenOrder(0,1,2);
 			this.loadScene(\Starsfinal);
-		}, "Stars final"];
+		}, "WAIT. Stars final"];
 		cues[60] = [{
 			this.loadScene(\Party);
 		}, "Party lights"];
