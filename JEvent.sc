@@ -240,7 +240,7 @@ JEvent {
 						var bus = Bus.alloc(\control, ~of).set(100);
 						var sender;
 						modulator = modulator.play(~of, outbus: bus);
-						sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [1, 0, In.kr(bus)])}.play(~of);
+						sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, In.kr(bus)])}.play(~of);
 						modulators.add([sender, modulator, bus]);
 
 						// ("Creating modulator to event id " ++ id.asString ++ " to param ID: " ++ paramId.asString ++ " with modulator " ++ modulator).postln;
@@ -252,6 +252,16 @@ JEvent {
 				});
 			});
 		});
+	}
+	stopMod{
+		modulators.do{
+			|e|
+			e.do{
+				|f|
+				f.free;
+			}
+		};
+		modulators.clear;
 	}
 }
 

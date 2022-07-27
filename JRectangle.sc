@@ -25,6 +25,7 @@ JRectangle : JEvent{
 	}
 	setFilled {
 		|value = true|
-		~visualUDP.sendMsg("/setVal", id, "fill", value);
+		this.setVal("fill", value);
+		// ~visualUDP.sendMsg("/setVal", id, "fill", value);
 	}
 }
