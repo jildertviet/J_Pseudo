@@ -237,9 +237,10 @@ JEvent {
 				if(~of.serverRunning, {
 					if(paramId != nil, {
 						// Create Synth
-						"Modulator is now static!".error;
-						var m = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, SinOsc.kr(1).range(100, 200)])}.play(~of);
+						var m = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, modulator.addToSynth])}.play(~of);
 						modulators.add(m);
+						"Modulator is now static!".error;
+
 						// ("Creating modulator to event id " ++ id.asString ++ " to param ID: " ++ paramId.asString ++ " with modulator " ++ modulator).postln;
 					}, {
 						("Parameter " ++ parameter ++ " doesn't seem to be mappable").error;
