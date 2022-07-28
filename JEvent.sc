@@ -243,7 +243,11 @@ JEvent {
 						var bus = Bus.alloc(\control, ~of).set(100);
 						var sender;
 						modulator = modulator.play(~of, outbus: bus);
-						sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, In.kr(bus)])}.play(~of);
+						if((parameter=="alpha").or(parameter=="r").(parameter=="g").(parameter=="b"),{ // Send additional arg to identify color
+							sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, In.kr(bus), parameter.asString[0].ascii])}.play(~of); // Send first char of string, 'a', 'r', 'g', 'b'
+						},{
+							sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, In.kr(bus)])}.play(~of);
+						});
 						modulators.add([sender, modulator, bus]);
 
 						// ("Creating modulator to event id " ++ id.asString ++ " to param ID: " ++ paramId.asString ++ " with modulator " ++ modulator).postln;
