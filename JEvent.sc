@@ -233,7 +233,7 @@ JEvent {
 		this.class.name.postln;
 	}
 	mod {
-		|parameter="width", modulator="{SinOsc.kr(1)}"|
+		|parameter="width", modulator="{SinOsc.kr(1)}", link=false|
 		if(modulator != nil, {
 			var paramId = ~v[0].getParamId(this.class.name, parameter); // "JEvent", "width" should lookup.
 			if(~of != nil, {
@@ -248,8 +248,12 @@ JEvent {
 						},{
 							sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, In.kr(bus)])}.play(~of);
 						});
+						if(link == true, modulator.onFree{
+							("killEnv on " ++ this.asString).postln;
+							this.killEnv();
+							this.stopMod();
+						});
 						modulators.add([sender, modulator, bus]);
-
 						// ("Creating modulator to event id " ++ id.asString ++ " to param ID: " ++ paramId.asString ++ " with modulator " ++ modulator).postln;
 					}, {
 						("Parameter " ++ parameter ++ " doesn't seem to be mappable").error;
