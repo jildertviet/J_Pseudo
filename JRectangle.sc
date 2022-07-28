@@ -1,7 +1,4 @@
 JRectangle : JEvent{
-	setType{ // Override
-		type = "JRectangle";
-	}
 	createUnique {
 		this.sendMakeCmd("JRectangle");
 	}
@@ -17,7 +14,7 @@ JRectangle : JEvent{
 		b = b.toJV;
 		c = c.toJV;
 		d = d.toJV;
-		~visualUDP.sendMsg("/setVal", id, "quadColor",
+		~v[visualizerID].sendMsg("/setVal", id, "quadColor",
 			a[0], a[1], a[2],
 			b[0], b[1], b[2],
 			c[0], c[1], c[2],
@@ -26,6 +23,5 @@ JRectangle : JEvent{
 	setFilled {
 		|value = true|
 		this.setVal("fill", value);
-		// ~visualUDP.sendMsg("/setVal", id, "fill", value);
 	}
 }

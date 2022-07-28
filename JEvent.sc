@@ -9,7 +9,7 @@ JEvent {
 	var <>bBundle = false;
 	var <>bundle;
 	var <>visualizerID = 0;
-	var <>type="JEvent";
+	// var <>type="JEvent";
 	var <>modulators;
 	*new{
 		|layer=2, visualizerID=0|
@@ -54,11 +54,11 @@ JEvent {
 		this.uniqueInit();
 		bundle = List.new();
 		modulators = List.new();
-		this.setType();
+		// this.setType();
 	}
-	setType{
+	/*setType{
 		type = "JEvent"
-	}
+	}*/
 	startBundle{
 		this.bBundle = true;
 	}
@@ -229,10 +229,13 @@ JEvent {
 	gui {
 		this.basicGui();
 	}
+	testName {
+		this.class.name.postln;
+	}
 	mod {
 		|parameter="width", modulator="{SinOsc.kr(1)}"|
 		if(modulator != nil, {
-			var paramId = ~v[0].getParamId(type, parameter); // "JEvent", "width" should lookup.
+			var paramId = ~v[0].getParamId(this.class.name, parameter); // "JEvent", "width" should lookup.
 			if(~of != nil, {
 				if(~of.serverRunning, {
 					if(paramId != nil, {
