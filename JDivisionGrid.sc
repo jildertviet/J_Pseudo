@@ -2,7 +2,9 @@ JDivisionGrid : JEvent{
 	createUnique {
 		|a|
 		if(layer == nil, {createArgs.add(defaultLayer);}); // Add default layer, so extra arg is not the 3rd, but the 4th
-		createArgs.add(true);
+		// createArgs.add(true);
+		createArgs.add(size[0]);
+		createArgs.add(size[1]);
 		this.sendMakeCmd("JDivisionGrid");
 	}
 	displayMesh { // Display wireframe

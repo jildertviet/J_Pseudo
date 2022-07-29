@@ -1,0 +1,48 @@
+TITLE:: JDivisionGrid
+summary:: As een in Dynamic Heights
+categories:: ofxJVisuals
+related:: Classes/JEvent
+
+DESCRIPTION::
+Grid divisions
+
+
+CLASSMETHODS::
+
+
+INSTANCEMETHODS::
+
+METHOD:: displayMesh
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: createUnique
+(describe method here)
+
+ARGUMENT:: a
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: saveAllPoly
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: setSave
+(describe method here)
+
+ARGUMENT:: state
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+EXAMPLES::
+
+code::
+j = JDivisionGrid.new;
+j.setSize([500, 500]);
+j.create();
+::
