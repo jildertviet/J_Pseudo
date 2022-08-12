@@ -233,30 +233,33 @@ JEvent {
 		this.class.name.postln;
 	}
 	mod {
-		|parameter="width", modulator="{SinOsc.kr(1)}", link=false|
+		|parameters="width", modulator="{SinOsc.kr(1)}", link=false|
 		if(modulator != nil, {
-			var paramId = ~v[0].getParamId(this.class.name, parameter); // "JEvent", "width" should lookup.
+			var paramIDs = [];
+			if((parameters.isString), {
+				parameters = [parameters];
+			});
+			paramIDs = parameters.collect({|e|~v[0].getParamId(this.class.name, e)});
+// var paramId = ~v[0].getParamId(this.class.name, parameter); // "JEvent", "width" should lookup.
 			if(~of != nil, {
 				if(~of.serverRunning, {
-					if(paramId != nil, {
+					if(paramIDs.size != 0, {
 						// Create Synth
-						var bus = Bus.alloc(\control, ~of).set(100);
+						var bus = Bus.alloc(\control, ~of, paramIDs.size).set(0);
 						var sender;
 						modulator = modulator.play(~of, outbus: bus);
-						if((parameter=="alpha").or(parameter=="r").(parameter=="g").(parameter=="b"),{ // Send additional arg to identify color
-							sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, In.kr(bus), parameter.asString[0].ascii])}.play(~of); // Send first char of string, 'a', 'r', 'g', 'b'
-						},{
-							sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal", [id, paramId, In.kr(bus)])}.play(~of);
-						});
-						if(link == true, modulator.onFree{
-							("killEnv on " ++ this.asString).postln;
-							this.killEnv();
-							this.stopMod();
+						sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal",
+							[id, paramIDs.size] ++ paramIDs ++ In.kr(bus, paramIDs.size))}.play(~of);
+						if(link == true,
+							modulator.onFree{
+								("killEnv on " ++ this.asString).postln;
+								this.killEnv();
+								this.stopMod();
 						});
 						modulators.add([sender, modulator, bus]);
 						// ("Creating modulator to event id " ++ id.asString ++ " to param ID: " ++ paramId.asString ++ " with modulator " ++ modulator).postln;
 					}, {
-						("Parameter " ++ parameter ++ " doesn't seem to be mappable").error;
+						("Parameter " ++ parameters ++ " doesn't seem to be mappable").error;
 					});
 				}, {
 					"Remote server not running".error;

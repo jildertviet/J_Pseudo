@@ -43,6 +43,13 @@ EXAMPLES::
 
 code::
 j = JDivisionGrid.new;
-j.setSize([500, 500]);
+j.setSize([512, 512]);
 j.create();
+
+{
+inf.do{
+		j.splitAndSort(1);
+		0.5.wait;
+	}
+}.fork;
 ::

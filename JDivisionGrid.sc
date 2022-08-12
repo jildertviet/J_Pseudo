@@ -8,14 +8,19 @@ JDivisionGrid : JEvent{
 		this.sendMakeCmd("JDivisionGrid");
 	}
 	displayMesh { // Display wireframe
-		~visualUDP.sendMsg("/doFunc", id, 0);
+		this.doFunc(0);
 	}
 	saveAllPoly { // Save one frame
-		~visualUDP.sendMsg("/doFunc", id, 1);
+		this.doFunc(1);
 	}
 	setSave { // Sets the save flag
 		|state=true|
-		this.setCustomArg(0, state);
-		~visualUDP.sendMsg("/doFunc", id, 2);
+		this.setCustomArg(0, state); // ...
+		this.doFunc(2);
+	}
+	splitAndSort {
+		|num=1|
+		this.setCustomArg(0, num);
+		this.doFunc(3);
 	}
 }
