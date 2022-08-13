@@ -68,7 +68,7 @@ JVisuals : JMIDI{
 					("Received " ++ freePointers.size ++ " new free pointers").postln;
 					freePointers.postln;
 				}, '/freePointers', recvPort: 6063).oneShot;
-				netAddr.sendMsg("/getFreePointers", 0); // Get free pointers
+				netAddr.sendMsg("/getFreePointers", 0, 6063); // Get free pointers
 			freeID = nil;
 			"VISUALIZER FULL!!!".postln;
 		}, {

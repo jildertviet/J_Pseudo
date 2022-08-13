@@ -33,7 +33,7 @@ JEvent {
 			this.bundle.add(msgAsArray);
 			// If bundle > 20, send current bundle w/ endbundle
 		}, {
-			("sendBundle: " ++ msgAsArray).postln;
+			// ("sendBundle: " ++ msgAsArray).postln;
 			~v[visualizerID].netAddr.sendBundle(0.1, msgAsArray);
 		});
 	}
