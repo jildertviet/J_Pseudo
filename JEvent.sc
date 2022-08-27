@@ -2,6 +2,7 @@ JEvent {
 	var <id, <>color, <>loc, <size, <direction, <>speed, <>bMove=nil, <layer, <>createArgs, <>mode, <>zoom=1;
 	classvar <nonCamLayer = 4;
 	classvar <defaultLayer = 2;
+	classvar <negativeLayer = "negative";
 	var bCreateSend = false;
 	var <>rotation = #[0, 0, 0];
 	var guiWindow = nil;
@@ -11,6 +12,8 @@ JEvent {
 	var <>visualizerID = 0;
 	// var <>type="JEvent";
 	var <>modulators;
+	var <>modifiers;
+	var <>modifierTypes = #["array"];
 	*new{
 		|layer=2, visualizerID=0|
 		^super.new.init(layer, visualizerID)
@@ -54,6 +57,7 @@ JEvent {
 		this.uniqueInit();
 		bundle = List.new();
 		modulators = List.new();
+		modifiers = List.new();
 		// this.setType();
 	}
 	/*setType{
@@ -277,6 +281,33 @@ JEvent {
 		};
 		modulators.clear;
 	}
+	getModifierID{
+		|name|
+		modifierTypes.do{|e,i|
+			if(e == name, {^ i});
+		}
+	}
+	addJModifier{
+		|name,list|
+		var m = JModifier.new();
+		m.createArgs.add(id); // ID of parent
+		// switch(name,
+		// "array", {
+		m.createArgs.add(this.getModifierID(name));
+		list.do{|e|
+			m.createArgs.add(e);
+		};
+	// });
+		m.createArgs.postln;
+		m.create();
+		modifiers.add(m);
+	}
+}
+
+JModifier : JEvent{
+	createUnique {
+		this.sendMakeCmd("JModifier");
+	}
 }
 
 JEllipse : JEvent{
@@ -333,11 +364,11 @@ JNoise : JEvent {
 	}
 }
 
-JLinesFalling : JEvent { // Quick Batobe, Maybe Tomorrow visuals ripoff
-	createUnique {
-		this.sendMakeCmd("JLinesFalling");
-	}
-}
+// JLinesFalling : JEvent { // Quick Batobe, Maybe Tomorrow visuals ripoff
+// createUnique {
+// this.sendMakeCmd("JLinesFalling");
+// }
+// }
 
 + SimpleNumber{
 	midiToFloat{

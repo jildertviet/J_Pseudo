@@ -21,11 +21,21 @@ returns:: (describe returnvalue here)
 EXAMPLES::
 
 code::
-t = JText.new();
-t.create();
-t.setColor([255,255,255,1.0.rand.range(100, 255)]);
-t.setVal("text", ["<", ">", "x", "0", "1"].choose.asString);
-t.setLoc([100, 100 + (50 * i), 200.rand]);
-t.addEnv("x", [1000 + 1000.rand, 100, 1000 + 800.rand] * 2, [-500, w, w, 100], false);
-t.addEnv("brightness", [500, 2000, 1000 + 200.rand], [0, 255, 255, 0] * 1.0.rand.range(0.4, 1.0),true);
+(
+{
+	inf.do{
+		|i|
+		var w = 1080;
+		t = JText.new();
+		t.create();
+		t.setColor([255,255,255,1.0.rand.range(100, 255)]);
+		t.setVal("text", ["<", ">", "x", "0", "1"].choose.asString);
+		t.setLoc([100, 100 + (50 * i) % 1080, 200.rand]);
+		w = w - 20;
+		t.addEnv("x", [1000 + 1000.rand, 100, 1000 + 800.rand] * 2, [-50, w, w, 100], false);
+		t.addEnv("brightness", [500, 2000, 1000 + 200.rand], [0, 255, 255, 0] * 1.0.rand.range(0.4, 1.0),true);
+		0.1.wait;
+	}
+}.fork;
+)
 ::
