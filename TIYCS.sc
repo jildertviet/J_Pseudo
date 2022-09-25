@@ -232,7 +232,7 @@ TIYCS{
 		screens[screenID].sendMsg("/eventById", 4, id, x, y);
 	}
 	mappingGui{
-		|screenID=0|
+		|screenID=0, path="~"|
 		var aspectRatio = 1280/800;
 		var points = [[0,0],[1,0],[1,1],[0,1]];
 		var size = [300*aspectRatio,300];
@@ -306,7 +306,7 @@ TIYCS{
 			});
 			if(unicode == 115, {
 				var f;
-				f = File(("~/TIYCSMapping_"++screenID++".txt").standardizePath,"w");
+				f = File((path ++ "/TIYCSMapping_"++screenID++".txt").standardizePath,"w");
 				points.do{
 					|p|
 					// p.postln;
@@ -322,12 +322,13 @@ TIYCS{
 		});
 	}
 	readMappingFile{
+		|folder="~"|
 		"Read mapping file of 3 screens".postln;
 		3.do{
 			|i|
-			var g = File(("~/TIYCSMapping_"++i++".txt").standardizePath,"r");
+			var g = File((folder ++ "/TIYCSMapping_"++i++".txt").standardizePath,"r");
 			var a = g.readAllString.split($,).asFloat;
-			("Read: " ++ ("~/TIYCSMapping_"++i++".txt").standardizePath).postln;
+			("Read: " ++ (folder ++ "/TIYCSMapping_"++i++".txt").standardizePath).postln;
 			if(a.size() > 7, {
 				var points = [[a[0], a[1]],[a[2], a[3]],[a[4], a[5]],[a[6], a[7]]];
 				mappingPoints[i] = points;
