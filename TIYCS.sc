@@ -323,6 +323,7 @@ TIYCS{
 	}
 	readMappingFile{
 		|folder="~"|
+		if(File.exists(("~" ++ "/TIYCSMapping_0.txt").standardizePath) == false, {^false});
 		"Read mapping file of 3 screens".postln;
 		3.do{
 			|i|
