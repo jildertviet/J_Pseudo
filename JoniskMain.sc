@@ -22,16 +22,19 @@ JoniskMain{
 	var <>seqIndex = 0;
 	var guiDict;
 	var <>slidersDict;
+	*linuxPath{^"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/jonisk.config"}
 	*new{
-		^super.new.init();
+	|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config"|
+		^super.new.init(path);
 	}
 	init{
+	|path|
 		serialPorts = List.new();
 		jonisks = List.new();
 		this.openDefaultSerial();
 		this.initSerial();
 		// Server.default.waitForBoot({
-		this.readConfig(); // Creates Jonisk objects, that need a Bus allocated on the server
+		this.readConfig(path); // Creates Jonisk objects, that need a Bus allocated on the server
 		states = (0)!jonisks.size;
 		lastSeen = (0)!jonisks.size;
 		this.checkLastSeen();
@@ -42,7 +45,8 @@ JoniskMain{
 // });
 	}
 	readConfig{
-		var file = JSONFileReader.read("/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config");
+	|path|
+		var file = JSONFileReader.read(path);
 		file[0]["activeJonisks"].do{
 			|j, i|
 			var addr = j[0];

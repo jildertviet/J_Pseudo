@@ -55,8 +55,9 @@ Jonisk{
 		});
 	}
 	ota{
+		|ssid="x", password="x"|
 		var msg;
-		msg = address ++ [0x07, 0x00] ++ end;
+		msg = 0xFF!6 ++ [0x07] ++ address ++ ssid ++ [';'] ++ password ++ end;
 		this.send(msg);
 		"Turn Jonisk into OTA update mode".warn;
 	}
@@ -67,7 +68,7 @@ Jonisk{
 		if(bLive == false, {
 			var data = 0x00!(4*30); // 30 Jonisks
 			c.do{|v, i| data[(id*4)+i] = v};
-			msg = address ++ [0x05] ++ data ++ end;
+			msg = 0xFF!6 ++ [0x05] ++ address ++ data ++ end;
 			this.send(msg);
 		});
 	}
@@ -86,7 +87,7 @@ Jonisk{
 		}.fork;
 	}
 	requestBattery{
-		var msg = address ++ [0x08, 0x00, 0x00] ++ end;
+		var msg = 0xFF!6 ++ [0x08] ++ address ++ end;
 		this.send(msg);
 	}
 	// For GUI see JoniskGui.sc
@@ -128,7 +129,12 @@ Jonisk{
 		{batteryPctField.string_((batteryPct.asString) ++ "%");}.defer;
 	}
 	deepSleep{
-		var msg = address ++ [0x10, 0x00, 0x00] ++ end;
+		var msg = 0xFF!6 ++ [0x10] ++ address ++ end;
 		this.send(msg);
+	}
+	setOTAServer{
+		|ssid="", password="", url=""|
+		var json = "{\"ssid\":\""+ ssid +"\", \"password\":\""+password+"\", \"url\":\""+url+"\"}";
+		var msg = 0xFF!6 ++ [0x15] ++ address ++ json ++ end;
 	}
 }
