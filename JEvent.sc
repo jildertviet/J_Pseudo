@@ -289,7 +289,7 @@ JEvent {
 	}
 	addJModifier{
 		|name,list|
-		var m = JModifier.new();
+		var m = JModifier.new(0, visualizerID); // 0 is functional layer, doesn't get display called
 		m.createArgs.add(id); // ID of parent
 		// switch(name,
 		// "array", {
@@ -298,7 +298,7 @@ JEvent {
 			m.createArgs.add(e);
 		};
 	// });
-		m.createArgs.postln;
+		// m.createArgs.postln;
 		m.create();
 		modifiers.add(m);
 	}
