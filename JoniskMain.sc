@@ -89,8 +89,6 @@ JoniskMain{
 					e.postln;
 					portsToOpen.add(e);
 			})});
-			e.postln;
-			serialName.postln;
 			if(e.find(serialName) != nil, {
 				if(e.find(serialName) != nil, {
 					e.postln;
