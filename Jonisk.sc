@@ -16,6 +16,7 @@ Jonisk{
 	var < release = 1;
 	var <> bLive = false;
 	var <>brightnessAdd = 0.5;
+	var <>colorMap = #[0,1,2,3];
 	*new{
 		|index, serial|
 		Jonisk.loadSynthDef();
@@ -35,7 +36,8 @@ Jonisk{
 			|
 			brightnessAdd=1, rgbw=#[0,0,0,0], mode=0, out=0, rgbwAdd=#[0,0,0,0], curve = -4,
 			trigRand=1, a=0.1, s=1.0, r=1.0, gate=0, level=1, noiseMul=0, lagTime=0.01,
-			amp=1
+			amp=1,
+			colorMap=#[0,1,2,3]
 			|
 			var output;
 			var env = EnvGen.kr(Env.linen(a, s, r, level, curve: curve), Changed.kr(gate));
@@ -44,6 +46,7 @@ Jonisk{
 			amp = Lag.kr(amp, 1);
 			output = Lag2.kr(brightness , lagTime) + noise * rgbw;
 			output = (output + rgbwAdd).min(1);
+			output = Select.ar(colorMap, output);
 			Out.kr(out, output * amp);
 		}).load();
 	}
