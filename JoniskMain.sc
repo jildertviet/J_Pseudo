@@ -22,16 +22,17 @@ JoniskMain{
 	var <>seqIndex = 0;
 	var guiDict;
 	var <>slidersDict;
-	var linuxUSB = "USB0";
+	var <>serialName = "/dev/ttyUSB0";
 	*linuxPath{^"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/jonisk.config"}
 	*new{
-	|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config"|
-		^super.new.init(path);
+		|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config", serialNameTemp="USB0"|
+		^super.new.init(path, serialNameTemp);
 	}
 	init{
-		|path="~/jonisk.config", linuxUSB_="USB0"|
+		|path, serialNameTemp|
 		serialPorts = List.new();
 		jonisks = List.new();
+		serialName = serialNameTemp;
 		this.openDefaultSerial();
 		this.initSerial();
 		// Server.default.waitForBoot({
@@ -42,7 +43,6 @@ JoniskMain{
 		this.iniTestPattern();
 		this.initMIDI();
 		this.initGuiDict();
-		linuxUSB = linuxUSB_;
 		sequence = (0..(jonisks.size-1));
 // });
 	}
@@ -89,9 +89,10 @@ JoniskMain{
 					e.postln;
 					portsToOpen.add(e);
 			})});
-			("Looking for: " ++ linuxUSB).postln;
-			if(e.find(linuxUSB) != nil, {
-				if(e.find("/dev/tty" ++ linuxUSB) != nil, {
+			e.postln;
+			serialName.postln;
+			if(e.find(serialName) != nil, {
+				if(e.find(serialName) != nil, {
 					e.postln;
 					portsToOpen.add(e);
 			})});
