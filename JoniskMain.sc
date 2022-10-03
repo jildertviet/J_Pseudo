@@ -22,13 +22,14 @@ JoniskMain{
 	var <>seqIndex = 0;
 	var guiDict;
 	var <>slidersDict;
+	var linuxUSB = "USB0";
 	*linuxPath{^"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/jonisk.config"}
 	*new{
 	|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config"|
 		^super.new.init(path);
 	}
 	init{
-	|path|
+		|path="~/jonisk.config", linuxUSB_="USB0"|
 		serialPorts = List.new();
 		jonisks = List.new();
 		this.openDefaultSerial();
@@ -41,6 +42,7 @@ JoniskMain{
 		this.iniTestPattern();
 		this.initMIDI();
 		this.initGuiDict();
+		linuxUSB = linuxUSB_;
 		sequence = (0..(jonisks.size-1));
 // });
 	}
@@ -87,12 +89,21 @@ JoniskMain{
 					e.postln;
 					portsToOpen.add(e);
 			})});
+			("Looking for: " ++ linuxUSB).postln;
+			if(e.find(linuxUSB) != nil, {
+				if(e.find("/dev/tty" ++ linuxUSB) != nil, {
+					e.postln;
+					portsToOpen.add(e);
+			})});
 		};
 		portsToOpen.do{
 			|e, i|
 			(e ++ " opened").postln;
 			serialPorts.add(SerialPort.new(e, baud, crtscts: true));
 		};
+		if(portsToOpen.size == 0,{
+			"No serial port found!".error;
+		});
 	}
 	storeByte{
 		|byte|
