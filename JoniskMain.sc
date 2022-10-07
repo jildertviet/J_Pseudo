@@ -25,7 +25,7 @@ JoniskMain{
 	var <>serialName = "/dev/ttyUSB0";
 	*linuxPath{^"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/jonisk.config"}
 	*new{
-		|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config", serialNameTemp="USB0"|
+		|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config", serialNameTemp="/dev/ttyUSB0"|
 		^super.new.init(path, serialNameTemp);
 	}
 	init{
