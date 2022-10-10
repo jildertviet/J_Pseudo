@@ -316,6 +316,12 @@ JEllipse : JEvent{
 	}
 }
 
+JCircle : JEvent{
+	createUnique{
+		this.sendMakeCmd("JCircle");
+	}
+}
+
 JText : JEvent{
 	createUnique {
 		this.sendMakeCmd("JText");

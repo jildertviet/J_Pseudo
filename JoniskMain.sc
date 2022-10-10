@@ -6,7 +6,7 @@ JoniskMain{
 	var <> serialPorts;
 	var <> baud = 230400;
 	var <> updateRoutine;
-	var <> frameDur = 0.04;
+	var frameDur = 0.04;
 	var <>msgBuffer = #[0,0,0];
 	var <> message = "";
 	var <>bWriteMsg = false;
@@ -44,7 +44,15 @@ JoniskMain{
 		this.initMIDI();
 		this.initGuiDict();
 		sequence = (0..(jonisks.size-1));
+		this.uniqueInit();
 // });
+	}
+	uniqueInit{
+
+	}
+	createChildObject{
+		|i, serial|
+		^Jonisk.new(i, serial);
 	}
 	readConfig{
 	|path|
@@ -55,7 +63,7 @@ JoniskMain{
 			var addrToPrint = addr;
 			addr.postln;
 			addr = addr.collect({|e| e.split($x)[1].asHexIfPossible});
-			jonisks.add(Jonisk(i, serial).address_(addr).addrToPrint_(addrToPrint));
+			jonisks.add(this.createChildObject(i, serial).address_(addr).addrToPrint_(addrToPrint));
 		}
 		// This loads the Jonisk instances
 	}
@@ -429,6 +437,18 @@ JoniskMain{
 		MIDIdef.cc(\joniskAttack, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 1), 0)}, 5);
 		MIDIdef.cc(\joniskSustain, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 2), 1)}, 6);
 		MIDIdef.cc(\joniskRelease, {|val, note| guiDict[\setEnv].value(val.linlin(0, 127, 0, 3), 2)}, 7);
+	}
+	setFramerate{
+		|f=30|
+		frameRate = f;
+		frameDur = 1.0 / f;
+	}
+	send{
+		|msg|
+		if(serial != nil, {
+			// msg.postln;
+			serial.putAll(msg);
+		});
 	}
 }
 // This class should handle the SerialPort: initialize it, and pass it to the containing Jonisk objects.

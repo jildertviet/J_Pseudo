@@ -53,7 +53,7 @@ Jonisk{
 	send{
 		|msg|
 		if(serial != nil, {
-			msg.postln;
+			// msg.postln;
 			serial.putAll(msg);
 		});
 	}
