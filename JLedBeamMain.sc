@@ -3,7 +3,7 @@ JLedBeamMain : JoniskMain{
 	var <> updateNegativeMaskFunc;
 	var <> negativeMask;
 	uniqueInit{ // Override
-		negativeMask = List.new();
+		negativeMask = List.newFrom([[255,255]]);
 	}
 	createChildObject{
 		|i, serial|

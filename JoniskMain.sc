@@ -302,7 +302,7 @@ JoniskMain{
 				[e.createBatteryField(), s: 10],
 				[Button().states_([
 					["GUI", Color.white, Color.black.alpha_(0.1)],
-				]).action_({var guiWindow = e.gui; var bounds = guiWindow.bounds; guiWindow.bounds_(bounds + Rect(window.bounds.width, 0, 0, 0))}), s:10],
+				]).action_({var guiWindow = e.gui; var bounds = guiWindow[0].bounds; guiWindow[0].bounds_(bounds + Rect(window.bounds.width, 0, 0, 0))}), s:10],
 				[Button().states_([
 					["Test", Color.white, Color.black.alpha_(0.1)],
 				]).action_({e.testLed()}), s:10],

@@ -16,6 +16,7 @@
 			functions = Dictionary.newFrom([
 				\test, {object.testLed()},
 				\ota, {object.ota()},
+				\otaServer, {object.setOTAServer()},
 				\battery, {object.requestBattery()},
 				\testEnv, {object.trigger()},
 				\deepsleep, {object.deepSleep()},
@@ -74,9 +75,10 @@
 			["Battery",functions[\battery]],
 			["TestEnv",functions[\testEnv]],
 			["Sleep",functions[\deepsleep]],
+			["OtaS",functions[\otaServer]],
 		].do{
 			|e|
-			Button.new(window, 60@40).string_(e[0]).action_(e[1]);
+			Button.new(window, 50@40).string_(e[0]).action_(e[1]);
 		};
 		dict[\rgbw] = colorSliders = Array.fill(4, {
 			|i|
