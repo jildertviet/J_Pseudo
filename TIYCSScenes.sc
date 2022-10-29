@@ -430,7 +430,7 @@
 				this.setBus(13, 0);
 				this.setBus(14, 1);
 				this.valyueById(2, 255);
-				"Final stars".postln;
+				"Final stars: wait for MIDI 96".postln;
 				MIDIdef.noteOn(\fireball, {
 					|val, num|
 					"Fireball".postln;
