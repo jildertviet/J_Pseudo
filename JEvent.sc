@@ -252,7 +252,7 @@ JEvent {
 						var bus = Bus.alloc(\control, ~of, paramIDs.size).set(0);
 						var sender;
 						modulator = modulator.play(~of, outbus: bus);
-						sender = {SendReply.kr(Impulse.kr(~v[0].frameRate), "/mapVal",
+						sender = {SendReply.kr(Impulse.kr(~v[0].frameRate * 2), "/mapVal",
 							[id, paramIDs.size] ++ paramIDs ++ In.kr(bus, paramIDs.size))}.play(~of);
 						if(link == true,
 							modulator.onFree{
@@ -302,6 +302,10 @@ JEvent {
 		m.create();
 		modifiers.add(m);
 	}
+	fillBuffer{
+		|floatArray|
+		this.sendMsg(["/fillBuffer", id] ++ floatArray);
+	}
 }
 
 JModifier : JEvent{
@@ -325,6 +329,15 @@ JCircle : JEvent{
 JText : JEvent{
 	createUnique {
 		this.sendMakeCmd("JText");
+	}
+}
+
+JLine : JEvent{
+	createUnique {
+		this.sendMakeCmd("JLine");
+	}
+	setFromBuffer{
+		this.doFunc(0);
 	}
 }
 

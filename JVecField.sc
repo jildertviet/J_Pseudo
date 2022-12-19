@@ -7,22 +7,22 @@ JVecField : JEvent{
 	setLineLength {
 		|l|
 		lineLength = l;
-		~visualUDP.sendMsg("/setVal", id, "lineLength", "JVecField", l);
+		this.setVal("lineLength", "JVecField", l);
 	}
 	setLineWidth {
 		|l|
 		lineWidth = l;
-		~visualUDP.sendMsg("/setVal", id, "lineWidth", l);
+		this.setVal("lineWidth", l);
 	}
 	setComplexity {
 		|c|
 		complexity  = c;
-		~visualUDP.sendMsg("/setVal", id, "complexity", "JVecField", c);
+		this.setVal("complexity", "JVecField", c);
 	}
 	setDensity {
 		|d = #[128, 80]|
 		density = d;
-		~visualUDP.sendMsg("/setVal", id, "density", "JVecField", d[0], d[1]);
+		this.setVal("density", "JVecField", d[0], d[1]);
 	}
 	setDrawMode {
 		|m = "lines"|
@@ -31,7 +31,7 @@ JVecField : JEvent{
 		if(m == "circles", {m = 3});
 		if(m == "hide", {m = 4});
 		if(m == "texture", {m = 7});
-		~visualUDP.sendMsg("/setVal", id, "drawMode", m);
+		this.setVal("drawMode", m);
 	}
 	setSourceMode {
 		|m="underlaying"|
@@ -40,11 +40,11 @@ JVecField : JEvent{
 		if(m == "test", {m = 1});
 		if(m == "underlaying", {m = 6});
 		m.postln;
-		~visualUDP.sendMsg("/setVal", id, "mode", m);
+		this.setVal("mode", m);
 	}
 	setContrast {
 		|c=1.0|
 		this.setCustomArg(0, c);
-		~visualUDP.sendMsg("/doFunc", id, 0);
+		this.doFunc(0);
 	}
 }

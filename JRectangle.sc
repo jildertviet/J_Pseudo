@@ -14,7 +14,7 @@ JRectangle : JEvent{
 		b = b.toJV;
 		c = c.toJV;
 		d = d.toJV;
-		~v[visualizerID].sendMsg("/setVal", id, "quadColor",
+		this.setVal("quadColor",
 			a[0], a[1], a[2],
 			b[0], b[1], b[2],
 			c[0], c[1], c[2],

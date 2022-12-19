@@ -5,7 +5,7 @@ JParticles : JEvent{
 	var <>uniqueID = 1;
 	createUnique {
 		|a|
-		if(layer == nil, {createArgs.add(defaultLayer);}); // Add default layer, so extra arg is not the 3rd, but the 4th
+		// if(layer == nil, {createArgs.add(defaultLayer);}); // Add default layer, so extra arg is not the 3rd, but the 4th
 		createArgs.add(true); // !? 2
 		createArgs.add(numParticles);
 		if(size == nil, {size=[1280, 800]});
@@ -23,46 +23,46 @@ JParticles : JEvent{
 	}
 	linkVecField {
 		|vecField|
-		~visualUDP.sendMsg("/linkVecField", id, vecField.id);
+		this.sendMsg("/linkVecField", id, vecField.id);
 	}
 
 	setGlobalForceX {
 		|x = 0|
 		globalForce[0] = x;
 		this.setCustomArg(0, x);
-		~visualUDP.sendMsg("/doFunc", id, 0); // Update globalForce
+		this.doFunc(0); // Update globalForce
 	}
 	setGlobalForceY {
 		|y = 0|
 		globalForce[1] = y * -1;
 		this.setCustomArg(1, y);
-		~visualUDP.sendMsg("/doFunc", id, 0); // Update globalForce
+		this.doFunc(0); // Update globalForce
 	}
 	setGlobalForce {
 		|f=#[0,0]|
 		globalForce = f;
 		this.setCustomArg(0, f[0]);
 		this.setCustomArg(1, f[1] * -1);
-		~visualUDP.sendMsg("/doFunc", id, 0); // Update globalForce
+		this.doFunc(0); // Update globalForce
 	}
 	setForceMultiplierX {
 		|x = 0|
 		forceMultiplier[0] = x;
 		this.setCustomArg(2, x);
-		~visualUDP.sendMsg("/doFunc", id, 1); // Update forceMultiplier
+		this.doFunc(1); // Update forceMultiplier
 	}
 	setForceMultiplierY {
 		|y = 0|
 		forceMultiplier[1] = y;
 		this.setCustomArg(3, y);
-		~visualUDP.sendMsg("/doFunc", id, 1); // Update forceMultiplier
+		this.doFunc(1); // Update forceMultiplier
 	}
 	setForceMultiplier {
 		|f=#[0,0]|
 		forceMultiplier = f;
 		this.setCustomArg(2, f[0]);
 		this.setCustomArg(3, f[1]);
-		~visualUDP.sendMsg("/doFunc", id, 1); // Update forceMultiplier
+		this.doFunc(1); // Update forceMultiplier
 	}
 	setTraagheid {
 		|t=0.9|
