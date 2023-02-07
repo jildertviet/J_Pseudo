@@ -383,6 +383,15 @@ JNoise : JEvent {
 	}
 }
 
+JShaderLines : JEvent{
+	var <> shaderName = "";
+	createUnique {
+		if(layer==nil, {layer=2});
+		createArgs.add(shaderName);
+		this.sendMakeCmd("JShaderLines");
+	}
+}
+
 // JLinesFalling : JEvent { // Quick Batobe, Maybe Tomorrow visuals ripoff
 // createUnique {
 // this.sendMakeCmd("JLinesFalling");

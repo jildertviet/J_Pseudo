@@ -13,6 +13,7 @@ JVisuals : JMIDI{
 	var <>guiWindow = nil;
 	var <>brightnessSlider = nil, <>alphaSlider=nil, <>maskBrightnessSlider=nil;
 	var <> mapValues;
+	var <> shaderPath = "/home/jildert/of_v0.11.2_linux64gcc6_release/addons/ofxJVisuals/libs/shaders/";
 	*new{
 		|netAddr_|
 		^super.new.init(netAddr_)
@@ -253,6 +254,15 @@ JVisuals : JMIDI{
 					TempoClock.default.tempo = 1/~dif; TempoClock.default.beats = TempoClock.default.beats.round(8).postln
 				});
 
+			});
+		};
+	}
+	listShaders{
+		var p = PathName.new(shaderPath);
+		p.entries.do{
+			|e|
+			if(e.extension == "frag", {
+				e.fileNameWithoutExtension.postln;
 			});
 		};
 	}

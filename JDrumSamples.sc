@@ -11,7 +11,7 @@ JDrumSamples {
 	}
 	loadByFolderName{
 		|fName=""|
-		var path = "/Users/jildertviet/Music/JildertMusic/Samples/Drums/Drum Samples/Drum Machines/";
+		var path = "/home/jildert/Music/JildertMusic/Samples/Drums/Drum Samples/Drum Machines/";
 		var folder;
 		this.buffers = List.new();
 		path = path ++ fName ++ "/";
@@ -27,7 +27,7 @@ JDrumSamples {
 	}
 	loadRandom {
 		var i = 0;
-		var d = PathName.new("/Users/jildertviet/Music/JildertMusic/Samples/Drums/Drum Samples/Drum Machines/");
+		var d = PathName.new("/home/jildert/Music/JildertMusic/Samples/Drums/Drum Samples/Drum Machines/");
 		var folder = d.entries.choose;
 		this.buffers = List.new();
 		if(folder.isFolder, {
