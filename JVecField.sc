@@ -7,7 +7,7 @@ JVecField : JEvent{
 	setLineLength {
 		|l|
 		lineLength = l;
-		this.setVal("lineLength", "JVecField", l);
+		this.setVal("lineLength", ["JVecField", l]);
 	}
 	setLineWidth {
 		|l|
@@ -17,12 +17,12 @@ JVecField : JEvent{
 	setComplexity {
 		|c|
 		complexity  = c;
-		this.setVal("complexity", "JVecField", c);
+		this.setVal("complexity", ["JVecField", c]);
 	}
 	setDensity {
 		|d = #[128, 80]|
 		density = d;
-		this.setVal("density", "JVecField", d[0], d[1]);
+		this.setVal("density", ["JVecField"] ++ d);
 	}
 	setDrawMode {
 		|m = "lines"|

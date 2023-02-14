@@ -6,9 +6,9 @@ JVisuals : JMIDI{
 	var <>bShiftPressed = false;
 	classvar <>defaultPort = 6061;
 	var <>netAddr;
-	var <size = #[1280, 800];
-	var <w = 1280;
-	var <h = 800;
+	var <size = #[1920, 1080];
+	var <w = 1920;
+	var <h = 1080;
 	var <>frameRate = 60;
 	var <>guiWindow = nil;
 	var <>brightnessSlider = nil, <>alphaSlider=nil, <>maskBrightnessSlider=nil;
@@ -46,7 +46,7 @@ JVisuals : JMIDI{
 			msg.postln;
 			{
 				var w = Window.new("Events", Rect(0, 0, 400, 400)).front;
-// List all nodes, per layer?
+				// List all nodes, per layer?
 			}.fork(AppClock);
 		}, '/allEvents', recvPort: 6063).oneShot; // once only
 		netAddr.sendMsg("/getInfo", 0); // Get all events
@@ -54,7 +54,7 @@ JVisuals : JMIDI{
 	}
 	// initMidi { // Deprecated? Maybe try to run JMIDI.initMIDI()?
 	// ("/Users/jildertviet/Desktop/Visuals/midiMapping.scd").load;
-// }
+	// }
 	setFreePointers {
 		|new|
 		freePointers = new;
@@ -63,13 +63,13 @@ JVisuals : JMIDI{
 		var freeID;
 		if(freePointers.size == 0, {
 			OSCFunc({
-					|msg, time, addr, recvPort|
-					msg.removeAt(0);
-					freePointers = msg;
-					("Received " ++ freePointers.size ++ " new free pointers").postln;
-					freePointers.postln;
-				}, '/freePointers', recvPort: 6063).oneShot;
-				netAddr.sendMsg("/getFreePointers", 0, 6063); // Get free pointers
+				|msg, time, addr, recvPort|
+				msg.removeAt(0);
+				freePointers = msg;
+				("Received " ++ freePointers.size ++ " new free pointers").postln;
+				freePointers.postln;
+			}, '/freePointers', recvPort: 6063).oneShot;
+			netAddr.sendMsg("/getFreePointers", 0, 6063); // Get free pointers
 			freeID = nil;
 			"VISUALIZER FULL!!!".postln;
 		}, {
@@ -92,7 +92,7 @@ JVisuals : JMIDI{
 		// scheduledFunctions.do{
 		// |func|
 		// func.stop;
-	// };
+		// };
 		// REMOVE!!!
 	}
 	stop {
@@ -136,13 +136,13 @@ JVisuals : JMIDI{
 		if(color.isNil,{
 			var colorPicker = ColorPicker.new(bgColor, {|result| this.setBackground(result)}); ~tempWindow  = Window.new.front; ~tempWindow.close;
 			colorPicker.value_(bgColor);
-			}, {
+		}, {
 			bgColor = color;
 			if(guiWindow != nil, {guiWindow.asView.children[1].states_([["", Color.white, bgColor]])});
 			color = color.toJV;
 			color.postln;
 			netAddr.sendMsg("/setBackground", color[0], color[1], color[2]);
-			});
+		});
 	}
 	resetCam{
 		netAddr.sendMsg("/resetCam");
@@ -165,6 +165,10 @@ JVisuals : JMIDI{
 	}
 	receiveRBWindow{
 		"/Users/jildertviet/Desktop/Visuals/receiveFromRB.scd".load;
+	}
+	drawNegativeLayer{
+		|value=true|
+		netAddr.sendMsg("/setBDrawNegative", value);
 	}
 	openEditMode {
 		|note|
@@ -189,7 +193,7 @@ JVisuals : JMIDI{
 					~mOut.noteOn(16, 56 + apcNoteIndex, 5);
 					~mOut.noteOn(16, 56 + prevNote, 0);
 				}.fork;
-			0.5 // Time to wait?
+				0.5 // Time to wait?
 		});
 	}
 	startClickTrack {
