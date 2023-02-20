@@ -20,9 +20,9 @@ JMIDI {
 	initMIDI {
 		connectedDeviceNames = List.new(2);
 		if(MIDIClient.initialized == false, {
-			"Init MIDIClient".postln;
-			MIDIClient.init();
-			"MIDIClient initialized".postln;
+			// "Init MIDIClient".postln;
+			// MIDIClient.init(); // Done twice?
+			// "MIDIClient initialized".postln;
 		});
 
 		this.connectAPC();

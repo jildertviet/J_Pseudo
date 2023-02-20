@@ -15,18 +15,17 @@ JVisuals : JMIDI{
 	var <> mapValues;
 	var <> shaderPath = "/home/jildert/of_v0.11.2_linux64gcc6_release/addons/ofxJVisuals/libs/shaders/";
 	*new{
-		|netAddr_|
-		^super.new.init(netAddr_)
+		|netAddr_, bMidi=false|
+		^super.new.init(netAddr_,bMidi)
 	}
 	init {
-		|netAddr_|
+		|netAddr_, bMidi|
 		netAddr = netAddr_;
 		"Visuals client is created, using NetAddr w/ port ".post; netAddr.port.postln;
 		freePointers = (1..(maxEvents-1));
 		audioMapFunctions = Array.newClear(16);
 		presets = Array.fill(5, {Array.newClear(64)});
-		"Initializing MIDI...".postln;
-		this.initMIDI();
+		if(bMidi, {"Initializing MIDI...".postln;this.initMIDI()});
 		this.initMapValues
 	}
 	setSize {
