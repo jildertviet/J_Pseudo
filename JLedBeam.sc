@@ -23,12 +23,6 @@ JLedBeam : Jonisk{
 		msg.postln;
 		this.send(msg);
 	}
-	setOTAServer{
-		|ssid="", password="", url=""|
-		var json = "{\"ssid\":\""++ ssid ++"\", \"password\":\""++password++"\", \"url\":\""++url++"\"}";
-		var msg = 0xFF!6 ++ [0x11] ++ address ++ json ++ end;
-		this.send(msg);
-	}
 	checkIfBroadcast{
 		|broadcast|
 		if(broadcast == true, {^broadcastAddr}, {^address});

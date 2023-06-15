@@ -29,12 +29,12 @@ JPhysarum : JEvent{
 		this.setVal("speed", speedMul); // Use an already existing name
 	}
 	setDecay{
-		|decay=0.5|
+		|decay=0.98|
 		decay = decay;
 		this.setVal("decay", decay);
 	}
 	setDeposit{
-		|deposit=40|
+		|deposit=1|
 		deposit = deposit;
 		this.setVal("deposit", deposit);
 	}

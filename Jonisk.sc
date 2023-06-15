@@ -8,8 +8,9 @@ Jonisk{
 	var end = #[101,110,100];
 	var <>id = nil;
 	var <>bus;
-	var <> batteryPct = 100;
+	var <> batteryPct = 0;
 	var <> batteryPctField;
+	var <> fwVersionField;
 	var < brightness = 0.3; // Getters
 	var < attack = 1;
 	var < sustain = 1;
@@ -34,7 +35,7 @@ Jonisk{
 	*loadSynthDef{ // This should write a SynthDef file
 		SynthDef(\jonisk, {
 			|
-			brightnessAdd=1, rgbw=#[0,0,0,0], mode=0, out=0, rgbwAdd=#[0,0,0,0], curve = -4,
+			brightnessAdd=1, rgbw=#[0,0,0,0], mode=0, out=0, rgbwAdd=#[0,0,0,0], curve = 0,
 			trigRand=1, a=0.1, s=1.0, r=1.0, gate=0, level=1, noiseMul=0, lagTime=0.01,
 			amp=1,
 			colorMap=#[0,1,2,3]
@@ -125,6 +126,10 @@ Jonisk{
 	createBatteryField{
 		batteryPctField = StaticText.new().background_(Color.black.alpha_(0.1)).align_(\center).string_((batteryPct.asString) ++ "%");
 		^ batteryPctField;
+	}
+	createFwVersionField{
+		fwVersionField = StaticText.new().background_(Color.black.alpha_(0.1)).align_(\center).string_("...");
+		^ fwVersionField;
 	}
 	setBatteryPct{
 		|v|

@@ -288,7 +288,7 @@ JEvent {
 		}
 	}
 	addJModifier{
-		|name,list|
+		|name="array",list|
 		var m = JModifier.new(0, visualizerID); // 0 is functional layer, doesn't get display called
 		m.createArgs.add(id); // ID of parent
 		// switch(name,

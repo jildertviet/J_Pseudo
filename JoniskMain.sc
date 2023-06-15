@@ -134,9 +134,11 @@ JoniskMain{
 				if(msgBuffer[0] == 'e'.ascii[0], {
 					bWriteMsg = false;
 					this.parseMsg();
+					^ true;
 				});
 			});
 		});
+		^ false;
 	}
 	parseMsg{
 		var msg = message;
@@ -145,7 +147,7 @@ JoniskMain{
 		if(msg.find("b") == 0, { // Battery update
 			var addr = (0!6);
 			var batteryVoltage;
-			msg = msg.replace("b", "");
+			msg = msg.replace("b", ""); // ?
 			for(0, 5, {|e, i| addr[i] = msg.split($:)[i].asInteger});
 			addr = addr + [0, 0, 0, 0, 0, 1];
 			addr.postln;
@@ -162,22 +164,32 @@ JoniskMain{
 				this.gui();
 			}.defer;*/
 		});
-		if(msg.find("a") == 0, {
+		if(msg.find("a") == 0, { // Alive ping?
 			var addr = (0!6);
 			var batteryVoltage;
+			var fwVersion = "...";
 			msg = msg.replace("a", "");
 			for(0, 5, {|e, i| addr[i] = msg.split($:)[i].asInteger});
 			addr = addr + [0, 0, 0, 0, 0, 1];
 			addr.postln;
-			batteryVoltage = msg.split($:).last.asInteger;
+
+
+			// ("fwVersion: " ++ fwVersion[0] ++ "," ++ fwVersion[1]).postln;
+			batteryVoltage = msg.split($:)[6].asInteger;
 			batteryVoltage = batteryVoltage / 2.pow(12); // 0V is 0, 16.8V is 4096. Value is now a percentage / 100.
 			batteryVoltage = batteryVoltage - (2/3); // 0.66 is shut-down voltage
 			batteryVoltage = (batteryVoltage * 300).asInteger; // 1/3 is scaled back to 100%
+
+			if(msg.split($:).size >= 8, {
+				fwVersion = msg.split($:).at([7, 8]).ascii.reshape(2);
+			});
+
 			jonisks.do{
 				|e, i|
 				if(e.address == addr, {
 					{states[i].value_(1)}.defer;
 					e.setBatteryPct(batteryVoltage);
+					{e.fwVersionField.string_(fwVersion.asString)}.defer;
 					lastSeen[i] = Date.getDate.rawSeconds;
 				}
 			)};
@@ -196,22 +208,25 @@ JoniskMain{
 						byte = serial.next;
 						while({byte != nil}, {
 							this.storeByte(byte);
-							this.checkForMsgEnd(byte);
-							// msgBuffer.postln;
+							if(this.checkForMsgEnd(byte), { // This calles MsgParse()
+
+							}, {
+								if(byte < 127, {
+									if(byte == 10, { // Newline?
+										"".postln;
+									}, {
+										// byte.asAscii.post; // Monitor incoming bytes
+									});
+								});
+							});
 							if(bWriteMsg == true, {
 								message = message ++ byte.asAscii;
 							});
+
 							this.checkForMsgStart(byte);
-							if(byte < 127, {
-								if(byte == 10, {
-									"".postln;
-								}, {
-									byte.asAscii.post;
-								});
-							});
 							byte = serial.next;
 						});
-						0.1.wait;
+						0.05.wait; // Was 0.1
 					};
 				}).play;
 			}, {
@@ -254,8 +269,14 @@ JoniskMain{
 		updateRoutine.stop;
 	}
 	gui{
+		var canvasLocal = View(); // .background_(Color.black);
 		var globalButton;
-		window = Window("TIYCS - Jonisk control", Rect(0, 0, 600, 2000), scroll: true).front;
+		var canvas,layout;
+		var bounds = Rect(0, 0, 600, 700);
+		window = Window("TIYCS - Jonisk control", bounds, scroll: true).front;
+		window.view.hasBorder_(false);
+		window = ScrollView(window, bounds:  bounds.insetBy(2,0)).hasBorder_(false);
+		window.palette_(QPalette.dark);
 		liveButton = Button().string_("Idle").action_({
 			|e|
 			e.states_([["GO LIVE", Color.white, Color.new255(49,222,75)], ["STOP", Color.white, Color.new255(255,65,54)]]).action_({
@@ -275,7 +296,7 @@ JoniskMain{
 			e.valueAction_(1);
 		});
 
-		window.view.palette_(QPalette.dark);
+		canvasLocal.palette_(QPalette.dark);
 		states = Array.fill(jonisks.size, {Button().states_([
 					["", Color.grey, Color.grey],
 					["", Color.grey, Color.green],
@@ -300,6 +321,7 @@ JoniskMain{
 				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), s: 10],
 				[StaticText.new().string_(e.addrToPrint.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), s: 100],
 				[e.createBatteryField(), s: 10],
+				[e.createFwVersionField(), s: 20],
 				[Button().states_([
 					["GUI", Color.white, Color.black.alpha_(0.1)],
 				]).action_({var guiWindow = e.gui; var bounds = guiWindow[0].bounds; guiWindow[0].bounds_(bounds + Rect(window.bounds.width, 0, 0, 0))}), s:10],
@@ -309,6 +331,8 @@ JoniskMain{
 				[states[i], s: 1]
 			)}));
 		);
+		canvasLocal.layout = layout;
+		window.canvas = canvasLocal;
 		globalButton.valueAction_(1);
 	}
 	configLights{
