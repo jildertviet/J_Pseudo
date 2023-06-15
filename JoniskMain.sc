@@ -23,6 +23,7 @@ JoniskMain{
 	var guiDict;
 	var <>slidersDict;
 	var <>serialName = "/dev/ttyUSB0";
+	var <> lagTime = 30;
 	*linuxPath{^"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/jonisk.config"}
 	*new{
 		|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config", serialNameTemp="/dev/ttyUSB0"|
@@ -238,7 +239,9 @@ JoniskMain{
 		jonisks[0].bus.getn(jonisks.size * 4, {
 			|v|
 			var end = [101,110,100];
-			var msg = (0xFF!6) ++ [0x05] ++ ((v*255).asInteger) ++ end;
+			// Or use msgType 0x05 for NO_LAG
+			var msg = (0xFF!6) ++ [0x09] ++ lagTime.asInteger.asInt16.asBytes ++ ((v*255).asInteger) ++ end;
+
 			// msg.postln;
 			serial.putAll(msg);
 		});
@@ -310,6 +313,7 @@ JoniskMain{
 					|menu|
 					menu.item.postln;
 					frameDur = (1/menu.item);
+					lagTime = frameDur;
 					frameRate = menu.item;
 				}).value_(frameRateIndex)],
 				globalButton,
@@ -397,7 +401,26 @@ JoniskMain{
 			\ota, {},
 			\battery, {},
 			\testEnv, {jonisks.do{|j| j.trigger()}},
-			\deepsleep, {"Inactive".postln;},
+			\deepsleep, {
+				var w = Window("Deep sleep duration: all", Rect(window.bounds.left, 500, window.bounds.width, 100));
+				var b = NumberBox(w, Rect(150, 10, 100, 20));
+				b.value = 1;
+				b.action = {
+					arg numb;
+					var min = numb.value;
+					w.close;
+					// object.deepSleep(numb.value);
+					{
+						("Put all Jonisks to sleep for " ++ min.asString ++ " minutes").postln;
+						jonisks.do{|e|
+							e.postln;
+							e.deepSleep(min);
+							0.25.wait;
+						};
+					}.fork;
+				};
+				w.front;
+			},
 			\setColor, {
 				|e, i|
 				jonisks.do{

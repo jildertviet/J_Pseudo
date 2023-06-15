@@ -43,3 +43,9 @@ Some extensions to existing classes
 		^(Float.from32Bits(this.nodeID));
 	}
 }
+
++ Integer {
+	asInt16{
+		^ Int16(this);
+	}
+}

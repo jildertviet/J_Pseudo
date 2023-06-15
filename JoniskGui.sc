@@ -19,7 +19,13 @@
 				\otaServer, {object.setOTAServer()},
 				\battery, {object.requestBattery()},
 				\testEnv, {object.trigger()},
-				\deepsleep, {object.deepSleep()},
+				\deepsleep, {
+					var w = Window("Deep sleep duration", Rect(window.bounds.left, 500, window.bounds.width, 100));
+					var b = NumberBox(w, Rect(150, 10, 100, 20));
+					b.value = 1;
+					b.action = {arg numb; object.deepSleep(numb.value); w.close;};
+					w.front;
+				},
 				\setColor, {
 					|e, i|
 					var color = object.color;
@@ -35,7 +41,7 @@
 					object.color.toJV[i];
 				},
 				\getEnv, {
-				|i|
+					|i|
 					[object.attack, object.sustain, object.release].at(i)
 				},
 				\setEnv, {
