@@ -12,7 +12,7 @@
 				};
 			}],
 			["Test", {
-				this.setScene(17);
+				this.setScene(17); // ID's are from OF
 			}],
 			["Intro", {
 				var rotateSynth, bus;
@@ -492,7 +492,7 @@
 				}, 96, chan: 14);
 			}],
 			["Party", {
-				var colors = ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"]; // https://coolors.co/palettes/popular/rainbow (export, code, array)
+				var colors = ["ffbe0b","fb5607","ff006e","8338ec","3a86ff"]; // https://coolors.co/palettes/popular/rainbow
 				colors = colors.collect({|c| Color.fromHexString(c)});
 				if(~j != nil, {
 					~j.jonisks.do{|j|
@@ -523,10 +523,10 @@
 				});
 				"BLACKOUT".postln;
 			}],
-			["Einde", {
+			["Einde", { // This is triggered automatically x seconds after fireball MIDI is triggered in Starsfinal scene
 				this.valyueById(2, 0); // Black
-				"/usr/local/bin/brightness 0.0".unixCmd;
-				{10.wait; "/usr/local/bin/brightness 1.0".unixCmd;}.fork;
+				"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/blackout.sh".unixCmd;
+				// {10.wait; "/usr/local/bin/brightness 1.0".unixCmd;}.fork;
 				this.setScene(18);
 				{
 					4.wait;

@@ -15,6 +15,7 @@ TIYCS{
 	var <> mappingPoints;
 	var <> automationWindow;
 	var <> cues;
+	var <> patterns;
 	*new{
 		|ip="127.0.0.1"|
 		^super.new.init(ip);
@@ -45,6 +46,7 @@ TIYCS{
 		this.initScenes();
 		childWindows = List.new();
 		mappingPoints = [[0,0],[1,0],[1,1],[0,1]]!3;
+		patterns = 0!4;
 		this.readMappingFile();
 	}
 	makeRoutine{
@@ -231,7 +233,7 @@ TIYCS{
 		|screenID=0, id=0, x=0, y=0|
 		screens[screenID].sendMsg("/eventById", 4, id, x, y);
 	}
-	mappingGui{
+	mappingGuiOld{
 		|screenID=0, path="~"|
 		var aspectRatio = 1280/800;
 		var points = [[0,0],[1,0],[1,1],[0,1]];
@@ -285,17 +287,17 @@ TIYCS{
 		w.view.keyDownAction_({
 			|doc, char, mod, unicode, keycode, key|
 			if(keycode == 123, { // L
-  				points[lastMovedPoint][0] = points[lastMovedPoint][0] - (1/this.getWidth());
-  			});
-  			if(keycode == 124, { // R
-  				points[lastMovedPoint][0] = points[lastMovedPoint][0] +  (1/this.getWidth());
-  			});
-  			if(keycode == 126, { // U
-  				points[lastMovedPoint][1] = points[lastMovedPoint][1] - (1/this.getHeight());
-  			});
-  			if(keycode == 125, { // D
-  				points[lastMovedPoint][1] = points[lastMovedPoint][1] + (1/this.getHeight());
-  			});
+				points[lastMovedPoint][0] = points[lastMovedPoint][0] - (1/this.getWidth());
+			});
+			if(keycode == 124, { // R
+				points[lastMovedPoint][0] = points[lastMovedPoint][0] +  (1/this.getWidth());
+			});
+			if(keycode == 126, { // U
+				points[lastMovedPoint][1] = points[lastMovedPoint][1] - (1/this.getHeight());
+			});
+			if(keycode == 125, { // D
+				points[lastMovedPoint][1] = points[lastMovedPoint][1] + (1/this.getHeight());
+			});
 			if((keycode == 123).or(keycode==124).or(keycode==125).or(keycode==126), {
 				points = points.max(0).min(1);
 				w.refresh
@@ -320,6 +322,76 @@ TIYCS{
 				"Save mapping".postln;
 			});
 		});
+	}
+	mappingGui{
+		var vertexID = NumberBox().normalColor_(Color.white);
+		var screenID = NumberBox().normalColor_(Color.white);
+		var stepSize = NumberBox().normalColor_(Color.white).value_(1);
+		var saveButton = Button().string_("Save").action_({
+			screens[screenID.value.asInteger].sendMsg("/eventById", 8); // Save ofxPiMapper
+		});
+		var updateVertex = {
+			|x=0, y=0|
+			// [screenID.value, vertexID.value, x, y].postln;
+			screens[screenID.value.asInteger].sendMsg("/eventById", 7, screenID.value.asInteger, vertexID.value.asInteger, x, y);
+		};
+		var w = Window.new("test", Rect(0, 900, 200, 50)).view.keyDownAction_({|doc, char, mod, unicode, keycode, key|
+			switch(keycode,
+				119, {updateVertex.(0, -1 * stepSize.value)}, // W: up
+				97, {updateVertex.(-1 * stepSize.value, 0)}, // A: left
+				115, {updateVertex.(0, 1 * stepSize.value)}, // S: down
+				100, {updateVertex.(1 * stepSize.value, 0)} // D: right
+		)}).front;
+		w.palette_(QPalette.dark);
+		w.layout = VLayout(
+			HLayout(TextField().canFocus_(false).string_("Screen ID"), screenID),
+			HLayout(TextField().canFocus_(false).string_("Vertex ID"), vertexID),
+			HLayout(TextField().canFocus_(false).string_("Step size"), stepSize),
+			saveButton
+		);
+		// Use WASD to move, use numberBox to set vertex index.
+	}
+	placementGui{
+		var a;
+		var dimensions = [10, 5];
+		var w = Window("Placement", Rect(0, 600, 1000, 500)).front;
+		w.view.palette_(QPalette.dark);
+		a = { {
+			var width = w.view.bounds.width / dimensions[0];
+			var height = w.view.bounds.height / dimensions[1];
+			var c = View.new(w, Rect(0, 0, width, 100));
+			var b = NumberBox(c,Rect(0, height*0.5 - (17.5), width * 0.9, 25)).value_(-1).background_(Color.gray).maxDecimals_(0).align_(\center);
+			c.background = Color(0, 0, 0, 0.1);
+			c;
+		} ! dimensions[0] } ! dimensions[1];
+		w.layout = VLayout(*a.collect { |x| HLayout(*x) });
+		a.flat.do({|e| e.children[0].action_(
+			{
+				|e|
+				if(e.value >= 0, {e.background_(Color.white)}, {e.background_(Color.gray)});
+				patterns[0] = a.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					if(i.odd, {r = r.reverse});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[0].postln; // Chaser per row, not scanning, continous line
+				patterns[1] = a.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[1].postln; // Chaser per row, scanning
+				patterns[2] = a.flop.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[2].postln; // Chaser per column, not scanning, continous line
+				patterns[3] = a.flop.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					if(i.odd, {r = r.reverse});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[3].postln; // Chaser per column, scanning
+		})});
 	}
 	readMappingFile{
 		|folder="~"|
