@@ -18,6 +18,7 @@ JoniskMain{
 	var <>states;
 	var <>testPattern;
 	var <>patternDelay = 0.1;
+	var <> patterns;
 	var <>sequence;
 	var <>seqIndex = 0;
 	var guiDict;
@@ -45,6 +46,7 @@ JoniskMain{
 		this.initMIDI();
 		this.initGuiDict();
 		sequence = (0..(jonisks.size-1));
+		patterns = 0!4;
 		this.uniqueInit();
 // });
 	}
@@ -75,7 +77,8 @@ JoniskMain{
 					|t, i|
 					if(t > 0, { // Only check actual set timestamps
 						if(Date.getDate.rawSeconds - t > 120, {
-							{states[i].value_(0)}.defer;
+							// {states[i].value_(0)}.defer; // Button
+							{states[i].background_(Color.gray)}.defer;
 						});
 					});
 				};
@@ -188,7 +191,7 @@ JoniskMain{
 			jonisks.do{
 				|e, i|
 				if(e.address == addr, {
-					{states[i].value_(1)}.defer;
+					{states[i].background_(Color.green)}.defer;
 					e.setBatteryPct(batteryVoltage);
 					{e.fwVersionField.string_(fwVersion.asString)}.defer;
 					lastSeen[i] = Date.getDate.rawSeconds;
@@ -275,7 +278,7 @@ JoniskMain{
 		var canvasLocal = View(); // .background_(Color.black);
 		var globalButton;
 		var canvas,layout;
-		var bounds = Rect(0, 0, 600, 700);
+		var bounds = Rect(0, 0, 500, 700);
 		window = Window("TIYCS - Jonisk control", bounds, scroll: true).front;
 		window.view.hasBorder_(false);
 		window = ScrollView(window, bounds:  bounds.insetBy(2,0)).hasBorder_(false);
@@ -303,7 +306,10 @@ JoniskMain{
 		states = Array.fill(jonisks.size, {Button().states_([
 					["", Color.grey, Color.grey],
 					["", Color.grey, Color.green],
-		])});
+		]).canFocus_(false)});
+		states = Array.fill(jonisks.size, {
+			View().background_(Color.gray);
+		});
 		globalButton = Button().string_("Global").action_({this.openGlobalGui});
 		window.layout = VLayout(
 			HLayout(
@@ -321,17 +327,25 @@ JoniskMain{
 				Button().string_("Test pattern").action_({this.toggleTestPatttern()}),
 /*				window.view.bounds.width * 0.25,*/
 			),
-			*(jonisks.collect({|e, i| HLayout(
-				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), s: 10],
-				[StaticText.new().string_(e.addrToPrint.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), s: 100],
-				[e.createBatteryField(), s: 10],
-				[e.createFwVersionField(), s: 20],
-				[Button().states_([
+			*(jonisks.collect({|e, i|
+				var guiButtonView = View();
+				var guiButton = Button(guiButtonView, Rect(0, 0, 40, 20)).states_([
 					["GUI", Color.white, Color.black.alpha_(0.1)],
-				]).action_({var guiWindow = e.gui; var bounds = guiWindow[0].bounds; guiWindow[0].bounds_(bounds + Rect(window.bounds.width, 0, 0, 0))}), s:10],
-				[Button().states_([
+				]).action_({
+					var guiWindow = e.gui;
+					var bounds = guiWindow[0].bounds;
+					guiWindow[0].bounds_(bounds + Rect(window.bounds.width, 0, 0, 0))});
+				var testButtonView = View();
+				var testButton = Button(testButtonView, Rect(0, 0, 40, 20)).states_([
 					["Test", Color.white, Color.black.alpha_(0.1)],
-				]).action_({e.testLed()}), s:10],
+				]).action_({e.testLed()});
+				HLayout(
+				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), s: 5],
+				[StaticText.new().string_(e.addrToPrint.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), s: 60],
+				[e.createBatteryField(), s: 10],
+				[e.createFwVersionField(), s: 10],
+				[guiButtonView, s: 10],
+				[testButtonView, s: 10],
 				[states[i], s: 1]
 			)}));
 		);
@@ -496,6 +510,48 @@ JoniskMain{
 			// msg.postln;
 			serial.putAll(msg);
 		});
+	}
+	placementGui{
+		var a;
+		var dimensions = [10, 5];
+		var w = Window("Placement", Rect(0, 600, 1000, 500)).front;
+		w.view.palette_(QPalette.dark);
+		a = { {
+			var width = w.view.bounds.width / dimensions[0];
+			var height = w.view.bounds.height / dimensions[1];
+			var c = View.new(w, Rect(0, 0, width, 100));
+			var b = NumberBox(c,Rect(0, height*0.5 - (17.5), width * 0.9, 25)).value_(-1).background_(Color.gray).maxDecimals_(0).align_(\center);
+			c.background = Color(0, 0, 0, 0.1);
+			c;
+		} ! dimensions[0] } ! dimensions[1];
+		w.layout = VLayout(*a.collect { |x| HLayout(*x) });
+		a.flat.do({|e| e.children[0].action_(
+			{
+				|e|
+				if(e.value >= 0, {e.background_(Color.white)}, {e.background_(Color.gray)});
+				patterns[0] = a.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					if(i.odd, {r = r.reverse});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[0].postln; // Chaser per row, not scanning, continous line
+				patterns[1] = a.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[1].postln; // Chaser per row, scanning
+				patterns[2] = a.flop.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[2].postln; // Chaser per column, not scanning, continous line
+				patterns[3] = a.flop.collect({|row, i|
+					var r = row.collect({|cell| cell.children[0].value.asInteger});
+					if(i.odd, {r = r.reverse});
+					r;
+				}).flat.select({|e| e >= 0});
+				patterns[3].postln; // Chaser per column, scanning
+		})});
 	}
 }
 // This class should handle the SerialPort: initialize it, and pass it to the containing Jonisk objects.
