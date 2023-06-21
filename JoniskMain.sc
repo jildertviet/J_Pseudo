@@ -48,7 +48,7 @@ JoniskMain{
 		sequence = (0..(jonisks.size-1));
 		patterns = 0!4;
 		this.uniqueInit();
-// });
+		// });
 	}
 	uniqueInit{
 
@@ -58,7 +58,7 @@ JoniskMain{
 		^Jonisk.new(i, serial);
 	}
 	readConfig{
-	|path|
+		|path|
 		var file = JSONFileReader.read(path);
 		file[0]["activeJonisks"].do{
 			|j, i|
@@ -163,9 +163,9 @@ JoniskMain{
 			jonisks.do{|e| if(e.address == addr, {
 				e.setBatteryPct(batteryVoltage);
 			})};
-/*			{
-				window.close;
-				this.gui();
+			/*			{
+			window.close;
+			this.gui();
 			}.defer;*/
 		});
 		if(msg.find("a") == 0, { // Alive ping?
@@ -298,14 +298,14 @@ JoniskMain{
 					"Stop live mode".postln;
 					this.stop();
 				})
-		});
+			});
 			e.valueAction_(1);
 		});
 
 		canvasLocal.palette_(QPalette.dark);
 		states = Array.fill(jonisks.size, {Button().states_([
-					["", Color.grey, Color.grey],
-					["", Color.grey, Color.green],
+			["", Color.grey, Color.grey],
+			["", Color.grey, Color.green],
 		]).canFocus_(false)});
 		states = Array.fill(jonisks.size, {
 			View().background_(Color.gray);
@@ -325,7 +325,7 @@ JoniskMain{
 				globalButton,
 				Button().string_("Config").action_({this.configLights}),
 				Button().string_("Test pattern").action_({this.toggleTestPatttern()}),
-/*				window.view.bounds.width * 0.25,*/
+				/*				window.view.bounds.width * 0.25,*/
 			),
 			*(jonisks.collect({|e, i|
 				var guiButtonView = View();
@@ -340,13 +340,13 @@ JoniskMain{
 					["Test", Color.white, Color.black.alpha_(0.1)],
 				]).action_({e.testLed()});
 				HLayout(
-				[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), s: 5],
-				[StaticText.new().string_(e.addrToPrint.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), s: 60],
-				[e.createBatteryField(), s: 10],
-				[e.createFwVersionField(), s: 10],
-				[guiButtonView, s: 10],
-				[testButtonView, s: 10],
-				[states[i], s: 1]
+					[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), s: 5],
+					[StaticText.new().string_(e.addrToPrint.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), s: 60],
+					[e.createBatteryField(), s: 10],
+					[e.createFwVersionField(), s: 10],
+					[guiButtonView, s: 10],
+					[testButtonView, s: 10],
+					[states[i], s: 1]
 			)}));
 		);
 		canvasLocal.layout = layout;
@@ -513,6 +513,7 @@ JoniskMain{
 	}
 	placementGui{
 		var a;
+		var filePath = "/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/placement.csv";
 		var dimensions = [10, 5];
 		var w = Window("Placement", Rect(0, 600, 1000, 500)).front;
 		w.view.palette_(QPalette.dark);
@@ -552,6 +553,34 @@ JoniskMain{
 				}).flat.select({|e| e >= 0});
 				patterns[3].postln; // Chaser per column, scanning
 		})});
+		w.view.keyDownAction_({|doc, char, mod, unicode, keycode, key| if(keycode == 115, {
+			"Save position mapping".postln;
+			File.use("/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/placement.csv".standardizePath, "w+", { |f|
+				// f.write("Doesn't this work?\n is this thing really on ?\n");
+				a.do{|row|
+					row.do{|e|
+						f.write(e.children[0].value.asString ++ ",");
+					};
+					f.write("\n");
+				}
+			});
+		})});
+
+		if(File.exists(filePath), {
+			var x = CSVFileReader.readInterpret(filePath);
+			"CSV: ".postln; x.postln;
+			x.do{
+				|row, i|
+				row.do{
+					|e, j|
+					if(e != nil, {
+						a[i][j].children()[0].valueAction_(e);// = e;
+					});
+				}
+			}
+		}, {
+			"No placement file found".warn;
+		});
 	}
 }
 // This class should handle the SerialPort: initialize it, and pass it to the containing Jonisk objects.
