@@ -41,7 +41,7 @@ TIYCS{
 		routines = List.new();
 		this.initDefaultMidi();
 		buffer = Buffer.alloc(Server.local, 400*3);
-		captainSample = Buffer.readChannel(Server.local, "/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/capt weg kwijt v2.wav", channels: 1);
+		captainSample = Buffer.readChannel(Server.local, "/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/capt weg kwijt v2.wav", channels: 1);
 		this.initScenes();
 		childWindows = List.new();
 		mappingPoints = [[0,0],[1,0],[1,1],[0,1]]!3;
@@ -186,7 +186,7 @@ TIYCS{
 			"ARP".postln;
 			// ~j.jonisks.choose.trigger();
 			~j.triggerNextInSeq();
-		}, noteNum: 36 + (0..30), chan: 14);
+		}, noteNum: 36 + (0..30), chan: 0); // Was 14...
 		MIDIdef.noteOn(\blackout, { // Pad 1
 			|val, num|
 			scenesDict[\BLACKOUT][1].value();

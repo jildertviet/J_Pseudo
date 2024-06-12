@@ -279,8 +279,9 @@
 			textBoxes[1].string = cues[value][1];
 			textBoxes[2].string = cues[value+1][1];
 			textBoxes[3].string = cues[value+2][1];
-			automationWindow.visible = false;
-			automationWindow.visible = true;
+			// automationWindow.visible = false;
+			// automationWindow.visible = true;
+			{automationWindow.front}.defer(0.2);
 		}); // Action function
 		textBoxes[2].string = cues[0][1];
 		textBoxes[3].string = cues[1][1];

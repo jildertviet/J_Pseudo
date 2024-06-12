@@ -141,9 +141,20 @@ Jonisk{
 		this.send(msg);
 	}
 	setOTAServer{
-		|ssid="", password="", url=""|
+		|ssid="", password="", url="https://192.168.1.100/.pio/build/esp32dev/firmware.bin"|
 		var json = "{\"ssid\":\""++ ssid ++"\", \"password\":\""++password++"\", \"url\":\""++url++"\"}";
 		var msg = 0xFF!6 ++ [0x15] ++ address ++ json ++ end;
 		this.send(msg);
+	}
+}
+
+JoniskTest : Jonisk{
+	*new{
+		|index, serial|
+		^super.new.init(index, serial);
+	}
+	*openDefaultSerial{
+		var serial = SerialPort.new(JoniskMain.serialName, JoniskMain.getBaudrate, crtscts: true);
+		^serial;
 	}
 }

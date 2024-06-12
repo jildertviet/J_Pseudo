@@ -6,7 +6,7 @@ Int16{
 	}
 	init{
 		|v|
-		value = v
+		value = v.asInteger
 	}
 	asBytes{
 		^ [value % 256, floor(value/256).asInteger];

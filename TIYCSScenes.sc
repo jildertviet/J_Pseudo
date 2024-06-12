@@ -177,19 +177,23 @@
 
 				if(~j != nil, {
 					~j.slidersDict[\rgbw].do{|e, i| e.valueAction = [255,0,0,0].at(i)}; // Slider at range 0-255
-					~j.slidersDict[\asr].do{|e, i| e.valueAction = [0, 0.5, 0].at(i)};
+					~j.slidersDict[\asr].do{|e, i| e.valueAction = [0, 0.2, 0].at(i)}; // Was 0.5 ...
 					~j.slidersDict[\brightness].valueAction = 0.45;
 					~j.slidersDict[\brightnessAdd].valueAction = 0;
 				});
 
 				MIDIdef.noteOn(\alarmOn, {
 					|val, num|
-					{redFill.valueAction = 255;}.defer; ("Note on " + num).postln;
+					// {redFill.valueAction = 255;}.defer;
+					this.setBus(5, 255);
+					("Note on " + num).postln;
 					~j.jonisks.do{|j| j.setColor([255,0,0,0]); j.synth.set(\rgbw, [1,0,0,0]); j.trigger()};
 				}, 35, chan: 14);
 				MIDIdef.noteOff(\alarmOff, {
 					|val, num|
-					{redFill.valueAction = 0;}.defer; ("Note off " + num).postln
+					// {redFill.valueAction = 0;}.defer;
+					this.setBus(5, 0);
+					("Note off " + num).postln
 					// ~j.jonisks.do{|j| j.setColor([0,0,0,0]);};
 				}, 35, chan: 14);
 
@@ -431,6 +435,7 @@
 				this.setBus(14, 1);
 				this.valyueById(2, 255);
 				"Final stars: wait for MIDI 96".postln;
+				// t.setScreenOrder(2,1,0); // Test this @ day
 				MIDIdef.noteOn(\fireball, {
 					|val, num|
 					"Fireball".postln;
@@ -521,11 +526,13 @@
 				if(~j != nil, {
 					~j.jonisks.do{|j| j.synth.set(\rgbw, [0,0,0,0])};
 				});
+				"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/blackout.sh".unixCmd;
+				~licht.sendMsg("/eos/cue/2/fire");
+				{~licht.sendMsg("/eos/cue/3/fire");}.defer(4);
 				"BLACKOUT".postln;
 			}],
 			["Einde", { // This is triggered automatically x seconds after fireball MIDI is triggered in Starsfinal scene
 				this.valyueById(2, 0); // Black
-				"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/blackout.sh".unixCmd;
 				// {10.wait; "/usr/local/bin/brightness 1.0".unixCmd;}.fork;
 				this.setScene(18);
 				{
@@ -544,7 +551,7 @@
 				if(~j != nil, {
 					~j.jonisks.do{|j| j.synth.set(\noiseMul, 0.5)};
 					// ~j.setBrightnessAdd(0.35);
-					~j.slidersDict[\brightnessAdd].valueAction = 0.35;
+					~j.slidersDict[\brightnessAdd].valueAction = 0.15;
 					~j.slidersDict[\brightness].valueAction = 0.6;
 					// ~j.setBrightness(0.6);
 				});

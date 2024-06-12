@@ -1,0 +1,40 @@
+TITLE:: JShaderS
+summary::  
+categories:: Undocumented classes
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+DESCRIPTION::
+
+
+CLASSMETHODS::
+
+INSTANCEMETHODS::
+
+EXAMPLES::
+
+code::
+~of = Server.remote(\of, NetAddr("localhost", 9993));
+
+(
+j = {
+  JShaderS.kr(busses: [0, 
+   \numLines.kr(10),
+   \speed.kr(0.5),
+   \smoothing.kr(40)
+  ])}.play(~of);
+)
+j.set(\speed, 0.5)
+j.set(\smoothing, 30.rand)
+j.set(\numLines, 20);
+t = {inf.do{j.set(\bus_1, rrand(3, 40)); 0.4.wait;}}.fork;
+p = "/home/jildert/of_v0.12.0-rc1_linux64gcc6_release/addons/ofxJVisuals/libs/shaders/shaderTest2".ascii
+b = Buffer.alloc(~of,p.size);
+b.setn(0, p.asArray);
+
+(
+{
+  JBufferSender.kr(bufnum: b, trigger: Impulse.kr(0), targetID: j.nodeID, subID: 0.0); // Send the buffer will parse the buffer as well
+  EnvGate(1, 1, 0.1);
+}.play(~of);
+)
+::

@@ -1,5 +1,6 @@
 JDrumSamples {
 	var <>buffers;
+  classvar <>dir = "/home/jildert/Music/JildertMusic/Samples/Drums/Drum Samples/Drum Machines/";
 	*new { | a |
         ^super.new.init(a);
     }
@@ -11,7 +12,7 @@ JDrumSamples {
 	}
 	loadByFolderName{
 		|fName=""|
-		var path = "/home/jildert/Music/JildertMusic/Samples/Drums/Drum Samples/Drum Machines/";
+		var path = dir;
 		var folder;
 		this.buffers = List.new();
 		path = path ++ fName ++ "/";
@@ -27,8 +28,8 @@ JDrumSamples {
 	}
 	loadRandom {
 		var i = 0;
-		var d = PathName.new("/home/jildert/Music/JildertMusic/Samples/Drums/Drum Samples/Drum Machines/");
-		var folder = d.entries.choose;
+    var d = dir;
+		var folder = PathName(d).entries.choose;
 		this.buffers = List.new();
 		if(folder.isFolder, {
 			folder.entries.do{
@@ -38,6 +39,43 @@ JDrumSamples {
 				buffers.add(bTemp);
 			}
 		});
+  }
+  /*
+  If folder get files inside, if another folder: also check
+  USE .deepFiles instead!!!
+  */
+  dirToSamplePaths {
+    |p|
+    var r = List.newClear(0);
+    var hasFolders = true;
+    PathName(p).entries.do{
+      |e|
+      // e.postln;
+      r.add(e.fullPath);
+    };
+    while({hasFolders == true}, {
+      hasFolders = false;
+      r.do{|e,i|
+        // e.postln;
+        if(e.isFolder, {
+          hasFolders = true;
+          r.removeAt(i);
+          PathName(e).entries.do{|f|
+            r.add(f.fullPath);
+          }
+        // Delete entrie, add children. 
+        });
+      }
+    })
+    ^r;
+  }
+  * loadRandomSamples {
+    |num|
+    var paths = PathName(dir).deepFiles; 
+    // var r = Array.fill(num, {paths.choose});
+    var r = Array.fill(num, {Buffer.read(Server.local,paths.choose.fullPath);});
+    ^r
+  }
 /*		d.entries.do{
 			|e|
 			if(e.isFolder, {
@@ -54,5 +92,5 @@ JDrumSamples {
 				// e.fullPath.postln;
 			});
 		};*/
-	}
 }
+

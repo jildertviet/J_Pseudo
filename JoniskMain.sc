@@ -4,7 +4,7 @@ JoniskMain{
 	var <> serialReadRoutine;
 	var <> serial; // Use one SerialPort instance
 	var <> serialPorts;
-	var <> baud = 230400;
+	classvar <> baud = 230400;
 	var <> updateRoutine;
 	var frameDur = 0.04;
 	var <>msgBuffer = #[0,0,0];
@@ -23,8 +23,9 @@ JoniskMain{
 	var <>seqIndex = 0;
 	var guiDict;
 	var <>slidersDict;
-	var <>serialName = "/dev/ttyUSB0";
+	classvar <>serialName = "/dev/ttyUSB0";
 	var <> lagTime = 30;
+	var testPatternPath = "/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/testPattern.scd";
 	*linuxPath{^"/home/jildert/of_v0.11.2_linux64gcc6_release/apps/TIYCS/jonisk.config"}
 	*new{
 		|path="/Users/jildertviet/of_v0.11.2_osx_release/apps/TIYCS/jonisk.config", serialNameTemp="/dev/ttyUSB0"|
@@ -50,6 +51,9 @@ JoniskMain{
 		this.uniqueInit();
 		// });
 	}
+	*getBaudrate{
+		^this.baud;
+	}
 	uniqueInit{
 
 	}
@@ -60,7 +64,7 @@ JoniskMain{
 	readConfig{
 		|path|
 		var file = JSONFileReader.read(path);
-		file[0]["activeJonisks"].do{
+		file[0]["active"].do{
 			|j, i|
 			var addr = j[0];
 			var addrToPrint = addr;
@@ -168,6 +172,8 @@ JoniskMain{
 			this.gui();
 			}.defer;*/
 		});
+		// 0x91
+		// 0xD9
 		if(msg.find("a") == 0, { // Alive ping?
 			var addr = (0!6);
 			var batteryVoltage;
@@ -324,7 +330,10 @@ JoniskMain{
 				}).value_(frameRateIndex)],
 				globalButton,
 				Button().string_("Config").action_({this.configLights}),
-				Button().string_("Test pattern").action_({this.toggleTestPatttern()}),
+				Button().string_("Test pattern").action_({
+					// this.toggleTestPatttern();
+					Document.open(testPatternPath).front;
+				});
 				/*				window.view.bounds.width * 0.25,*/
 			),
 			*(jonisks.collect({|e, i|
@@ -389,12 +398,6 @@ JoniskMain{
 			~jonisk.trigger();
 			~jonisk.id.postln;
 		});
-		Pdef(\joniskTestPattern,
-			Pbind(\type, \triggerJonisk,
-				\jonisk, Pseq(jonisks, inf),
-				\delta, patternDelay
-			)
-		)
 	}
 	toggleTestPatttern {
 		var pattern = Pdef(\joniskTestPattern);
