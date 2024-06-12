@@ -350,7 +350,7 @@ JoniskMain{
 				]).action_({e.testLed()});
 				HLayout(
 					[StaticText.new().string_(e.id).background_(Color.black.alpha_(0.1)), s: 5],
-					[StaticText.new().string_(e.addrToPrint.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), s: 60],
+					// [StaticText.new().string_(e.addrToPrint.asCompileString.replace("\"", "").replace("]", "").replace("[", "")).background_(Color.black.alpha_(0.1)), s: 60], // Disabled @ 13-06-2024, to compile @ Ubuntu, SC 3.10 
 					[e.createBatteryField(), s: 10],
 					[e.createFwVersionField(), s: 10],
 					[guiButtonView, s: 10],
