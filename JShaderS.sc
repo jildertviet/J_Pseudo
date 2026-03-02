@@ -16,10 +16,15 @@ JShaderS{
 		rgba=#[255,255,255,1.0],
 		bFilled=1,
 		mode=0,
-		busses=#[0,0,0,0,0,0,0,0,0,0]
+    numBusses=10,
+		busses=#[
+      0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0,
+      0,0,0,0,0,0,0,0,0,0
+    ]
 		|
-		if(busses.size < 10, {
-      busses = (busses ++ [0]).clipExtend(10)
+		if(busses.size < numBusses, {
+      busses = (busses ++ [0]).clipExtend(numBusses)
     });
 		^JEventDynamicS.kr(
 		id,
@@ -34,7 +39,8 @@ JShaderS{
 		rgba,
 		bFilled,
 		mode,
-		[8] ++ busses.at((1..7)), 
+    numBusses: numBusses,
+    busses:	([8] ++ busses.at((1..(numBusses-1)))),
 		);
   } 
   init{
